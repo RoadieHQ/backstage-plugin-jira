@@ -15,8 +15,9 @@
  */
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
+import axios from 'axios';
 
-export const buildKiteApiRef = createApiRef<JiraAPI>({
+export const jiraApiRef = createApiRef<JiraAPI>({
   id: 'plugin.jira.service',
   description: 'Used by the Jira plugin to make requests',
 });
@@ -44,4 +45,25 @@ export class JiraAPI {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
     return `${proxyUrl}${this.proxyPath}`;
   }
+
+  async getDashboards() {
+    const apiUrl = await this.getApiUrl();
+    const data = {
+      queries: ['project = EX ORDER BY Rank ASC'],
+    };
+    const request = await fetch(`${apiUrl}jql/parse`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+    .then(res => Promise.resolve(res))
+    .catch(err => Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request})); 
+    return request.json();  
+  }
+
+  async getIssues() {
+    const apiUrl = await this.getApiUrl();
+    const request = await axios(`${apiUrl}search?jql=project=Ex&issuetype=Bug&maxResults=0`);
+    return request;
+  }
+
 }

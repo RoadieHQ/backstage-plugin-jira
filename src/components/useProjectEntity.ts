@@ -13,4 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { default } from './ExampleFetchComponent';
+import { Entity } from '@backstage/catalog-model';
+
+export const JIRA_PROJECT_KEY_ANNOTATION = 'jira/project-key';
+
+export const useProjectEntity = (entity: Entity) => {
+  return entity.metadata?.annotations?.[JIRA_PROJECT_KEY_ANNOTATION] as string;
+};

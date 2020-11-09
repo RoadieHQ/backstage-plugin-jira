@@ -15,30 +15,38 @@
  */
 import React from 'react';
 import { render } from '@testing-library/react';
-import ExampleComponent from './ExampleComponent';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
+import { JiraPage } from './JiraPage';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { msw } from '@backstage/test-utils';
 
-
-describe('ExampleComponent', () => {
+describe('JiraPage Component', () => {
   const server = setupServer();
   // Enable sane handlers for network requests
   msw.setupDefaultHandlers(server);
-
+  
   // setup mock response
   beforeEach(() => {
-    server.use(rest.get('/*', (_, res, ctx) => res(ctx.status(200), ctx.json({}))))
+    server.use(rest.get('https://randomuser.me/*', (_, res, ctx) => res(ctx.status(200), ctx.delay(2000), ctx.json({}))))
   })
-
-  it('should render', () => {
-    const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <ExampleComponent />
-      </ThemeProvider>,
-      );
-      expect(rendered.getByText('Welcome to jira!')).toBeInTheDocument();
+  it('should render', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/managed-by-location':
+            'github:https://github.com/backstage/backstage/blob/master/software.yaml',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const rendered = render(<JiraPage entity={ entity } />);
+    expect(await rendered.findByTestId('progress')).toBeInTheDocument();
   });
 });

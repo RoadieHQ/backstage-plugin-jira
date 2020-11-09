@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 export { plugin } from './plugin';
+export { JiraCard } from './components/JiraCard';
+export * from './components/Router';

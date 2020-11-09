@@ -13,21 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRouteRef, createApiFactory, discoveryApiRef } from '@backstage/core';
-import { jiraApiRef, JiraAPI } from './api';
 
-export const rootRouteRef = createRouteRef({
-  path: '/jira',
-  title: 'jira',
-});
+import { Entity } from '@backstage/catalog-model';
 
-export const plugin = createPlugin({
-  id: 'jira',
-  apis: [
-    createApiFactory({
-      api: jiraApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new JiraAPI({ discoveryApi }),
-    }),
-  ],
-});
+export type EntityProps = {
+  entity: Entity;
+}

@@ -17,7 +17,8 @@ import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableColumn, Progress } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
-import { useAsync } from 'react-use';
+import { useDashboards } from '../useRequests';
+import { EntityProps } from '../types';
 
 const useStyles = makeStyles({
   avatar: {
@@ -88,20 +89,14 @@ export const DenseTable: FC<DenseTableProps> = ({ users }) => {
   );
 };
 
-const ExampleFetchComponent: FC<{}> = () => {
-  const { value, loading, error } = useAsync(async (): Promise<User[]> => {
-    const response = await fetch('https://randomuser.me/api/?results=20');
-    const data = await response.json();
-    return data.results;
-  }, []);
-
+export const JiraPage: FC<EntityProps> = ({ entity }) => {
+  const { value, loading, error } = useDashboards();
+  if(value) return null;
   if (loading) {
     return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  return <DenseTable users={value || []} />;
+return <p>{value}</p>;
 };
-
-export default ExampleFetchComponent;
