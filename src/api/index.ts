@@ -16,6 +16,7 @@
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
 import axios from 'axios';
+import { ProjectStatuses, IssuesCounter, IssueType } from '../types';
 
 export const jiraApiRef = createApiRef<JiraAPI>({
   id: 'plugin.jira.service',
@@ -23,6 +24,7 @@ export const jiraApiRef = createApiRef<JiraAPI>({
 });
 
 const DEFAULT_PROXY_PATH = '/jira/api/';
+const REST_API = 'rest/api/3/'
 
 type Options = {
   discoveryApi: DiscoveryApi;
@@ -46,12 +48,62 @@ export class JiraAPI {
     return `${proxyUrl}${this.proxyPath}`;
   }
 
+  private async getIssuesTypes(projectKey: string): Promise<Array<string>> {
+    const apiUrl = await this.getApiUrl();
+    const request = await axios(`${apiUrl}${REST_API}project/${projectKey}/statuses`);
+    const statusesNames = request.data.map((status: ProjectStatuses) => status.name);
+    return statusesNames;
+  }
+
+  private async getIssueIcon (issueType: string): Promise<string> {
+    const apiUrl = await this.getApiUrl();
+    const request = await axios(`${apiUrl}${REST_API}issuetype`);
+    const response = request.data;
+    return response.filter((issue: IssueType) => issue.name === issueType)[0].iconUrl;
+  }
+
+  private async getIssuesWithStatusCounter(apiUrl: string, projectKey: string, issueType: string) {
+    const data = {
+      jql: `project = ${projectKey} AND issuetype = ${issueType}`,
+      maxResults: 1,
+      fields: ['issuetype'],
+    };
+    const request = await axios.post(`${apiUrl}${REST_API}search`, data);
+    const response = request.data;
+    return {
+      total: response.total,
+      name: issueType,
+      iconUrl: response.issues.length
+        ? response.issues[0].fields.issuetype.iconUrl
+        : await this.getIssueIcon(issueType), // Request icon url fallback when response is null
+    } as IssuesCounter;
+  };
+
+  async getIssuesCounters(projectKey: string) {
+    const apiUrl = await this.getApiUrl();
+    const issuesTypes = await this.getIssuesTypes(projectKey);
+    const issuesWithStatus = await Promise.all(
+      issuesTypes.map(issueType => this.getIssuesWithStatusCounter(apiUrl, projectKey, issueType))
+    ) as Array<IssuesCounter>;
+    return issuesWithStatus.map(status => ({
+      ...status,
+    }));
+  }
+
+  async getActivityStream() {
+    const apiUrl = await this.getApiUrl();
+    const request = await axios(`${apiUrl}/activity?maxResults=10&os_authType=basic`)
+    .then(res => Promise.resolve(res))
+    .catch(err => Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request})); 
+    return request.data;  
+  }
+
   async getDashboards() {
     const apiUrl = await this.getApiUrl();
     const data = {
       queries: ['project = EX ORDER BY Rank ASC'],
     };
-    const request = await fetch(`${apiUrl}jql/parse`, {
+    const request = await fetch(`${apiUrl}${REST_API}jql/parse`, {
       method: 'POST',
       body: JSON.stringify(data),
     })
@@ -59,11 +111,4 @@ export class JiraAPI {
     .catch(err => Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request})); 
     return request.json();  
   }
-
-  async getIssues() {
-    const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}search?jql=project=Ex&issuetype=Bug&maxResults=0`);
-    return request;
-  }
-
 }

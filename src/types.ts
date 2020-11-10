@@ -19,3 +19,40 @@ import { Entity } from '@backstage/catalog-model';
 export type EntityProps = {
   entity: Entity;
 }
+
+export type ProjectStatuses = {
+  name: string;
+}
+
+export type IssueType = {
+  name: string;
+  iconUrl: string;
+}
+  
+export type Issue = {
+  key: string;
+  total: number;
+  fields: {
+    issuetype: IssueType
+  }
+}
+
+export type IssuesCounter = {
+  total: number,
+  name: string,
+  iconUrl: string;
+}
+
+export type ActivityStreamElement = {
+  value: string;
+  getElementsByTagName: (element: string) => Array<ActivityStreamElement>;
+}
+
+export type ActivityStreamEntry = {
+  author: {
+    name: string;
+    url: string;
+  };
+  elapsedTime: string;
+  title: string;
+}

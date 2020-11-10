@@ -16,21 +16,24 @@
 import { useCallback } from 'react';
 import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
+import XMLParser from 'react-xml-parser';
+import moment from 'moment';
 import { jiraApiRef } from '../api';
+import { ActivityStreamEntry, ActivityStreamElement } from '../types';
 
-export const useIssues = () => {
+export const useIssuesCounters = (projectKey: string) => {
   const api = useApi(jiraApiRef);
 
-  const getIssues = useCallback(async () => {
+  const getIssuesCounters = useCallback(async () => {
     try {
-      const response = await api.getIssues();
-      return response.data;
+      const response = await api.getIssuesCounters(projectKey);
+      return response;
     } catch (err) {
       return Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request});
     }
-  }, [api]);
+  }, [api, projectKey]);
   
-  const {loading, value, error} = useAsync(() => getIssues(), []);
+  const {loading, value, error} = useAsync(() => getIssuesCounters(), []);
 
   return {
     loading,
@@ -39,6 +42,48 @@ export const useIssues = () => {
   };
 }
 
+const getElementByTagName = (element: ActivityStreamElement, elementName: string) => element.getElementsByTagName(elementName)[0].value;
+const getElapsedTime = (start: string) => moment(start).fromNow();
+const decodeHtml = (html) => {
+  const txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+};
+
+export const useActivityStream = () => {
+  const api = useApi(jiraApiRef);
+
+  const getIssuesCounters = useCallback(async () => {
+    try {
+      const response = await api.getActivityStream();
+      const parsedData = new XMLParser().parseFromString(response);
+      const mappedData = parsedData.getElementsByTagName('entry').map(entry => {
+        const author = entry.getElementsByTagName('author')[0];
+        return {
+          author: {
+            name: getElementByTagName(author, 'name'),
+            url: getElementByTagName(author, 'uri'),
+          },
+          elapsedTime: getElapsedTime(getElementByTagName(entry, 'updated')),
+          //activity: getElementByTagName(entry, 'category'),
+          title: decodeHtml(getElementByTagName(entry, 'title')),
+        }
+      }) as Array<ActivityStreamEntry>;
+      return mappedData;
+    } catch (err) {
+      console.error(err);
+      return Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request});
+    }
+  }, [api]);
+  
+  const {loading, value, error} = useAsync(() => getIssuesCounters(), []);
+
+  return {
+    loading,
+    value,
+    error,
+  };
+}
 export const useDashboards = () => {
   const api = useApi(jiraApiRef);
 

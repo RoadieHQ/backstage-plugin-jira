@@ -18,7 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableColumn, Progress } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
 import { useDashboards } from '../useRequests';
-import { EntityProps } from '../types';
+import { EntityProps } from '../../types';
 
 const useStyles = makeStyles({
   avatar: {

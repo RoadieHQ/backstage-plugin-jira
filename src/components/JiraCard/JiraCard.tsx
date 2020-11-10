@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 import React, { FC } from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core';
+import { Grid, Box, Typography, makeStyles, createStyles, Theme, Divider } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard, Progress } from '@backstage/core';
-import { useIssues } from '../useRequests';
-import { EntityProps } from '../types';
+import { useIssuesCounters } from '../useRequests';
+import { useProjectEntity } from '../useProjectEntity';
+import { EntityProps } from '../../types';
+import { Status } from './components/Status';
+import { ActivityStream } from './components/ActivityStream';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,18 +37,38 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-
 export const JiraCard: FC<EntityProps> = ({ entity }) => {
   const classes = useStyles();
-  const { value, loading, error } = useIssues();
-;
+  const projectKey = useProjectEntity(entity);
+  const { value, loading, error } = useIssuesCounters(projectKey);
+
   return (
-    <InfoCard title="Jira" className={classes.infoCard}>
+    <InfoCard
+      title="Jira"
+      className={classes.infoCard}
+      deepLink={{
+        link: '/jira',
+        title: 'Go to project',
+      }}
+    >
       { loading ? <Progress /> : null }
       { error ? <Alert severity="error" className={classes.infoCard}>{error.message}</Alert> : null }
       { value ? (
         <div className={classes.root}>
-          { value.total }
+          <Grid container spacing={3}>
+            { value.map(issueType => (
+              <Grid item xs key={issueType.name}>
+                <Box width={ 100 } display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                  <Status name={issueType.name} iconUrl={issueType.iconUrl} />
+                  <Typography variant="h4">{issueType.total}</Typography>
+                </Box>
+              </Grid>
+            )) }
+          </Grid>
+          <Box py={2}>
+            <Divider />
+          </Box>
+          <ActivityStream />
         </div>
       ) : null }
     </InfoCard>
