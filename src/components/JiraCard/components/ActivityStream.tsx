@@ -16,7 +16,7 @@
 import React, { useCallback } from 'react';
 import { Box, Divider, Link, Paper, Typography, Tooltip, makeStyles, createStyles, Theme, } from '@material-ui/core';
 import { Progress } from '@backstage/core';
-import parse, { domToReact, attributesToProps } from 'html-react-parser';
+import parse, { domToReact, attributesToProps, DomElement } from 'html-react-parser';
 import { useActivityStream } from '../../useRequests';
 
 
@@ -78,12 +78,12 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const options = {
-  replace: (node) => {
+  replace: (node: DomElement) => {
     if (!node) return null;
  
-    if (node.name === 'a') {
+    if (node.name === 'a') { // Add target blank to all a hrefs
       const props = attributesToProps(node.attribs);
-      return <a {...props} target="_blank">{domToReact(node.children, options)}</a>;
+      return <a {...props} target="_blank" rel="noopener noreferrer">{domToReact(node.children, options)}</a>;
     }
     return null;
   }

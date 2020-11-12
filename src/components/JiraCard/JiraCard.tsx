@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { 
+  Avatar,
   Box,
   Checkbox,
   Divider,
@@ -32,7 +33,7 @@ import {
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard, Progress } from '@backstage/core';
-import { useIssuesCounters, useProjects } from '../useRequests';
+import { useIssuesCounters, useProjectInfo } from '../useRequests';
 import { useProjectEntity } from '../useProjectEntity';
 import { EntityProps } from '../../types';
 import { Status } from './components/Status';
@@ -74,27 +75,32 @@ const names = [
   'ExampleProject #2',
 ];
 
+const CardProjectDetails = ({ projectKey }: { projectKey: string}) => {
+  const { project, projectLoading, projectError } = useProjectInfo(projectKey);
+  if(projectLoading || projectError) return null;
+
+  return (
+    <Box display="flex" alignItems="center">
+      <Avatar alt="" src={project.iconUrl} />
+  <Box component="span" ml={1}> {project.name} | {project.type}</Box>
+    </Box>
+  );
+}
 
 export const JiraCard: FC<EntityProps> = ({ entity }) => {
   const classes = useStyles();
   const projectKey = useProjectEntity(entity);
   const { issues, issuesLoading, issuesError } = useIssuesCounters(projectKey);
-  const { projects, projectsLoading, projectsError } = useProjects();
-  const [projectName, setprojectName] = React.useState<string[]>([]);
+  const [statusesNames, setstatusesNames] = React.useState<string[]>([]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setprojectName(event.target.value as string[]);
+    setstatusesNames(event.target.value as string[]);
   };
-
-  useEffect(() => {
-    console.log(projectName);
-  },[projectName]);
-
-  console.log(projects && projects.values);
 
   return (
     <InfoCard
       title="Jira"
+      subheader= { <CardProjectDetails projectKey={ projectKey }/> }
       className={classes.infoCard}
       deepLink={{
         link: '/catalog/default/component/ExamplePipeline/jira',
@@ -117,18 +123,16 @@ export const JiraCard: FC<EntityProps> = ({ entity }) => {
             )) }
           </Grid>
 
-          <Box pt={2}>
+          <Box py={2}>
             <Divider />
-          </Box>
-            { projects?.values.length >= 2 && (
-              <Box display="flex" justifyContent="flex-end" pb={2}>
+            <Box display="flex" justifyContent="flex-end" pb={2}>
               <FormControl className={classes.formControl}>
-                <InputLabel id="demo-mutiple-checkbox-label">Select Project</InputLabel>
+                <InputLabel id="demo-mutiple-checkbox-label">Statuses</InputLabel>
                 <Select
                   labelId="select-projects-label"
                   id="select-projects"
                   multiple
-                  value={projectName}
+                  value={statusesNames}
                   onChange={handleChange}
                   input={<Input />}
                   renderValue={(selected) => (selected as string[]).join(', ')}
@@ -136,15 +140,14 @@ export const JiraCard: FC<EntityProps> = ({ entity }) => {
                 >
                   {names.map((name) => (
                     <MenuItem key={name} value={name}>
-                      <Checkbox checked={projectName.indexOf(name) > -1} />
+                      <Checkbox checked={statusesNames.indexOf(name) > -1} />
                       <ListItemText primary={name} />
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-            </Box> 
-            )}
-
+            </Box>
+          </Box>
           <ActivityStream />
         </div>
       ) : null }

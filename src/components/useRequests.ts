@@ -37,7 +37,12 @@ export const useIssuesCounters = (projectKey: string) => {
       const response = await api.getIssuesCounters(projectKey);
       return response;
     } catch (err) {
-      return Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request});
+      // if(err.response.status === 404) return Promise.reject({
+      //   message: 'Something goes wrong. Please make sure that you configured app-config.yaml correctly with your credentials and Jira url.'
+      // })
+      return Promise.reject({
+        message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
+      });
     }
   }, [api, projectKey]);
   
@@ -90,19 +95,45 @@ export const useActivityStream = () => {
     activitiesError: error,
   };
 }
-export const useProjects = () => {
+
+export const useProjectInfo = (projectKey: string) => {
   const api = useApi(jiraApiRef);
 
-  const getProjects = useCallback(async () => {
+  const getProjectInfo = useCallback(async () => {
     try {
-      const response = await api.getProjects();
+      const response = await api.getProjectInfo(projectKey);
       return response;
     } catch (err) {
-      return Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request});
+      return Promise.reject({
+        message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
+      });
     }
-  }, [api]);
+  }, [api, projectKey]);
   
-  const {loading, value, error} = useAsync(() => getProjects(), []);
+  const {loading, value, error} = useAsync(() => getProjectInfo(), []);
+
+  return {
+    projectLoading: loading,
+    project: value,
+    projectError: error,
+  };
+}
+
+export const useProjects = (projectKey: string) => {
+  const api = useApi(jiraApiRef);
+
+  const getStatuses = useCallback(async () => {
+    try {
+      const response = await api.getStatuses(projectKey);
+      return response;
+    } catch (err) {
+      return Promise.reject({
+        message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
+      });
+    }
+  }, [api, projectKey]);
+  
+  const {loading, value, error} = useAsync(() => getStatuses(), []);
 
   return {
     projectsLoading: loading,

@@ -20,10 +20,6 @@ export type EntityProps = {
   entity: Entity;
 }
 
-export type ProjectStatuses = {
-  name: string;
-}
-
 export type IssueType = {
   name: string;
   iconUrl: string;
@@ -73,3 +69,11 @@ export type ActivityStreamEntry = {
     }
   }>;
 }
+
+export type ProjectType = {
+  name: string;
+  avatarsUrls: {
+    [key: string]: string;
+  }
+  projectTypeKey: string;
+};

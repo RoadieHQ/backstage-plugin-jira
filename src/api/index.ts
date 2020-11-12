@@ -16,7 +16,7 @@
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
 import axios from 'axios';
-import { ProjectStatuses, IssuesCounter, IssueType } from '../types';
+import { IssuesCounter, IssueType } from '../types';
 
 export const jiraApiRef = createApiRef<JiraAPI>({
   id: 'plugin.jira.service',
@@ -48,23 +48,19 @@ export class JiraAPI {
     return `${proxyUrl}${this.proxyPath}`;
   }
 
-  private async getIssuesTypes(projectKey: string): Promise<Array<string>> {
+  private async getIssuesStatuses(projectKey: string): Promise<Array<IssueType>> {
     const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}${REST_API}project/${projectKey}/statuses`);
-    const statusesNames = request.data.map((status: ProjectStatuses) => status.name);
+    const request = await axios(`${apiUrl}${REST_API}project/${projectKey}`);
+    const statusesNames = request.data.issueTypes.map((status: IssueType) => ({
+      name: status.name,
+      iconUrl: status.iconUrl,
+    }));
     return statusesNames;
   }
 
-  private async getIssueIcon (issueType: string): Promise<string> {
-    const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}${REST_API}issuetype`);
-    const response = request.data;
-    return response.filter((issue: IssueType) => issue.name === issueType)[0].iconUrl;
-  }
-
-  private async getIssuesWithStatusCounter(apiUrl: string, projectKey: string, issueType: string) {
+  private async getIssuesWithStatusCounter(apiUrl: string, projectKey: string, issueStatus: string, issueIcon: string) {
     const data = {
-      jql: `project = ${projectKey} AND issuetype = ${issueType}`,
+      jql: `project = ${projectKey} AND issuetype = ${issueStatus}`,
       maxResults: 1,
       fields: ['issuetype'],
     };
@@ -72,40 +68,53 @@ export class JiraAPI {
     const response = request.data;
     return {
       total: response.total,
-      name: issueType,
-      iconUrl: response.issues.length
-        ? response.issues[0].fields.issuetype.iconUrl
-        : await this.getIssueIcon(issueType), // Request icon url fallback when response is null
+      name: issueStatus,
+      iconUrl: issueIcon,
     } as IssuesCounter;
   };
 
   async getIssuesCounters(projectKey: string) {
     const apiUrl = await this.getApiUrl();
-    const issuesTypes = await this.getIssuesTypes(projectKey);
+    const issuesStatuses = await this.getIssuesStatuses(projectKey);
     const issuesWithStatus = await Promise.all(
-      issuesTypes.map(issueType => this.getIssuesWithStatusCounter(apiUrl, projectKey, issueType))
+      issuesStatuses.map(issue => {
+        const issueStatus = issue.name;
+        const issueIcon = issue.iconUrl;
+        return this.getIssuesWithStatusCounter(apiUrl, projectKey, issueStatus, issueIcon)
+      })
     ) as Array<IssuesCounter>;
     return issuesWithStatus.map(status => ({
       ...status,
     }));
   }
 
+  async getProjectInfo(projectKey: string) {
+    const apiUrl = await this.getApiUrl();
+    const request = await axios(`${apiUrl}${REST_API}project/${projectKey}`);
+    const project = request.data;
+    return {
+      name: project.name,
+      iconUrl: project.avatarUrls['16x16'],
+      type: project.projectTypeKey,
+    };
+  }
+
   async getActivityStream() {
     const apiUrl = await this.getApiUrl();
     const request = await axios(`${apiUrl}/activity?maxResults=10&os_authType=basic`)
     .then(res => Promise.resolve(res))
-    .catch(err => Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request})); 
+    .catch(err => Promise.reject({
+      message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
+    })); 
     return request.data;  
   }
 
-  async getProjects() {
+  async getStatuses(projectKey: string) {
     const apiUrl = await this.getApiUrl();
-    const data = {
-      queries: ['project = EX ORDER BY Rank ASC'],
-    };
-    const request = await fetch(`${apiUrl}${REST_API}project/search`)
+    await axios(`${apiUrl}${REST_API}project/${projectKey}/statuses`)
     .then(res => Promise.resolve(res))
-    .catch(err => Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request})); 
-    return request.json();  
+    .catch(err => Promise.reject({
+      message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
+    })); 
   }
 }
