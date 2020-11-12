@@ -85,16 +85,21 @@ export const useActivityStream = () => {
   const {loading, value, error} = useAsync(() => getIssuesCounters(), []);
 
   return {
-    loading,
-    value,
-    error,
+    activitesLoading: loading,
+    activities: value,
+    activitiesError: error,
   };
 }
 export const useProjects = () => {
   const api = useApi(jiraApiRef);
 
   const getProjects = useCallback(async () => {
-    await api.getProjects();
+    try {
+      const response = await api.getProjects();
+      return response;
+    } catch (err) {
+      return Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request});
+    }
   }, [api]);
   
   const {loading, value, error} = useAsync(() => getProjects(), []);

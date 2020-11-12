@@ -15,7 +15,6 @@
  */
 import React, { useCallback } from 'react';
 import { Box, Divider, Link, Paper, Typography, Tooltip, makeStyles, createStyles, Theme, } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
 import { Progress } from '@backstage/core';
 import parse, { domToReact, attributesToProps } from 'html-react-parser';
 import { useActivityStream } from '../../useRequests';
@@ -92,26 +91,26 @@ const options = {
 
 export const ActivityStream = () => {
   const classes = useStyles();
-  const { value, loading, error } = useActivityStream();
+  const { activities, activitesLoading, activitiesError } = useActivityStream();
 
   const showMore = useCallback((e) => {
     e.preventDefault();
   }, []);
 
-  if(error) return <Alert severity="error">Failed to load activity stream</Alert>
+  if(activitiesError) return null; // Remove activity stream on error
 
   return (
     <>
       <Typography variant="subtitle1">Activity stream</Typography>
       <Paper className={classes.paper}>
-      { loading ? <Progress /> : null }
-      { value ? (
+      { activitesLoading ? <Progress /> : null }
+      { activities ? (
         <>
-        {value.map(entry => (
+        {activities.map(entry => (
           <Box key={entry.id}>
             {parse(entry.title, options)} 
             <Box>
-              {parse((entry.summary || entry.content), options)}
+              {parse((entry.summary || entry.content || ''), options)}
             </Box>
             <Box display="flex" alignItems="center" mt={1}>
               <Tooltip title={entry.icon.title}>

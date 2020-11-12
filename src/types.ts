@@ -59,6 +59,8 @@ export type ActivityStreamElement = {
     url: string;
     title: string;
   }
+  summary?: string;
+  content?: string;
 }
 
 export type ActivityStreamEntry = {

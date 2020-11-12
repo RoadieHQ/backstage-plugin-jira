@@ -103,10 +103,7 @@ export class JiraAPI {
     const data = {
       queries: ['project = EX ORDER BY Rank ASC'],
     };
-    const request = await fetch(`${apiUrl}${REST_API}jql/parse`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
+    const request = await fetch(`${apiUrl}${REST_API}project/search`)
     .then(res => Promise.resolve(res))
     .catch(err => Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request})); 
     return request.json();  
