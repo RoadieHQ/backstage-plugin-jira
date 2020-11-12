@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },  
     root: {
       flexGrow: 1,
+      fontSize: '0.75rem',
     },
   }),
 );
@@ -40,23 +41,23 @@ const useStyles = makeStyles((theme: Theme) =>
 export const JiraCard: FC<EntityProps> = ({ entity }) => {
   const classes = useStyles();
   const projectKey = useProjectEntity(entity);
-  const { value, loading, error } = useIssuesCounters(projectKey);
+  const { issues, issuesLoading, issuesError } = useIssuesCounters(projectKey);
 
   return (
     <InfoCard
       title="Jira"
       className={classes.infoCard}
       deepLink={{
-        link: '/jira',
+        link: '/catalog/default/component/ExamplePipeline/jira',
         title: 'Go to project',
       }}
     >
-      { loading ? <Progress /> : null }
-      { error ? <Alert severity="error" className={classes.infoCard}>{error.message}</Alert> : null }
-      { value ? (
+      { issuesLoading ? <Progress /> : null }
+      { issuesError ? <Alert severity="error" className={classes.infoCard}>{issuesError.message}</Alert> : null }
+      { issues ? (
         <div className={classes.root}>
           <Grid container spacing={3}>
-            { value.map(issueType => (
+            { issues.map(issueType => (
               <Grid item xs key={issueType.name}>
                 <Box width={ 100 } display="flex" flexDirection="column" alignItems="center" justifyContent="center">
                   <Status name={issueType.name} iconUrl={issueType.iconUrl} />

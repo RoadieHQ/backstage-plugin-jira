@@ -43,16 +43,31 @@ export type IssuesCounter = {
   iconUrl: string;
 }
 
+type PropertyValue = {
+  _text: string;
+}
+
+
 export type ActivityStreamElement = {
-  value: string;
-  getElementsByTagName: (element: string) => Array<ActivityStreamElement>;
+  id: string;
+  time: {
+    elapsed: string;
+    value: Date;
+  },
+  title: string;
+  icon: {
+    url: string;
+    title: string;
+  }
 }
 
 export type ActivityStreamEntry = {
-  author: {
-    name: string;
-    url: string;
-  };
-  elapsedTime: string;
-  title: string;
+  updated: PropertyValue;
+  title: PropertyValue;
+  link: Array<{
+    _attributes: {
+      href: string;
+      title: string;
+    }
+  }>;
 }

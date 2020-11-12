@@ -17,7 +17,7 @@ import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableColumn, Progress } from '@backstage/core';
 import Alert from '@material-ui/lab/Alert';
-import { useDashboards } from '../useRequests';
+import { useProjects } from '../useRequests';
 import { EntityProps } from '../../types';
 
 const useStyles = makeStyles({
@@ -90,7 +90,7 @@ export const DenseTable: FC<DenseTableProps> = ({ users }) => {
 };
 
 export const JiraPage: FC<EntityProps> = ({ entity }) => {
-  const { value, loading, error } = useDashboards();
+  const { value, loading, error } = useProjects();
   if(value) return null;
   if (loading) {
     return <Progress />;

@@ -98,7 +98,7 @@ export class JiraAPI {
     return request.data;  
   }
 
-  async getDashboards() {
+  async getProjects() {
     const apiUrl = await this.getApiUrl();
     const data = {
       queries: ['project = EX ORDER BY Rank ASC'],

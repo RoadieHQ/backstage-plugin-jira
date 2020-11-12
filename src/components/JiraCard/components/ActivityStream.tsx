@@ -13,30 +13,90 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Box, Paper, Typography, makeStyles, createStyles, Theme, } from '@material-ui/core';
+import React, { useCallback } from 'react';
+import { Box, Divider, Link, Paper, Typography, Tooltip, makeStyles, createStyles, Theme, } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { Progress } from '@backstage/core';
-import parse from 'html-react-parser';
+import parse, { domToReact, attributesToProps } from 'html-react-parser';
 import { useActivityStream } from '../../useRequests';
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
-      padding: theme.spacing(1),
+      padding: theme.spacing(2),
       backgroundColor: '#f6f8fa',
       color: 'rgba(0, 0, 0, 0.87)',
       marginTop: theme.spacing(1),
+      overflowY: 'auto',
+      maxHeight: '290px',
       '& a': {
         color: theme.palette.primary.main,
       },
-    },  
+      '& hr': {
+        backgroundColor: 'rgba(0, 0, 0, 0.12)',
+        margin: theme.spacing(1, 0),
+      },
+      '& blockquote': {
+        background: "#e0f0ff",
+        borderLeft: "1px solid #c2d9ef",
+        color: "#222",
+        fontStyle: "normal",
+        margin: theme.spacing(1, 0),
+        overflowX: "auto",
+        overflowY: "hidden",
+        padding: theme.spacing(0, 1),
+      },
+      '& > :last-child > hr': {
+        display: 'none',
+      },
+      '&::-webkit-scrollbar-track': {
+        backgroundColor: '#F5F5F5',
+        borderRadius: '5px',
+      },
+      '&::-webkit-scrollbar': {
+        width: '5px',
+        backgroundColor: '#F5F5F5',
+        borderRadius: '5px',
+      },
+      '&::-webkit-scrollbar-thumb': {
+        border: '1px solid #555555',
+        backgroundColor: '#555',
+        borderRadius: '4px',
+      },
+      '& span': {
+        fontSize: '0.7rem',
+      }
+    },
+    time: {
+      lineHeight: 0,
+      marginLeft: theme.spacing(1),
+    },
+    link: {
+      cursor: 'pointer',
+    }
   }),
 );
+
+const options = {
+  replace: (node) => {
+    if (!node) return null;
+ 
+    if (node.name === 'a') {
+      const props = attributesToProps(node.attribs);
+      return <a {...props} target="_blank">{domToReact(node.children, options)}</a>;
+    }
+    return null;
+  }
+};
 
 export const ActivityStream = () => {
   const classes = useStyles();
   const { value, loading, error } = useActivityStream();
+
+  const showMore = useCallback((e) => {
+    e.preventDefault();
+  }, []);
 
   if(error) return <Alert severity="error">Failed to load activity stream</Alert>
 
@@ -46,12 +106,30 @@ export const ActivityStream = () => {
       <Paper className={classes.paper}>
       { loading ? <Progress /> : null }
       { value ? (
-        value.map(entry => (
-          <Box>
-            {parse(entry.title)}
-            <Typography variant="subtitle2">{entry.elapsedTime}</Typography>
+        <>
+        {value.map(entry => (
+          <Box key={entry.id}>
+            {parse(entry.title, options)} 
+            <Box>
+              {parse((entry.summary || entry.content), options)}
+            </Box>
+            <Box display="flex" alignItems="center" mt={1}>
+              <Tooltip title={entry.icon.title}>
+                <img src={entry.icon.url} alt={entry.icon.title} />
+              </Tooltip>
+              <Tooltip title={entry.time.value}>
+                <Typography variant="caption" className={classes.time}>
+                    {entry.time.elapsed}
+                </Typography>
+              </Tooltip>
+            </Box>
+            <Divider />
           </Box>
-        ))
+        ))}
+        <Box display="flex" justifyContent="center" pt={1}>
+          <Link onClick={showMore} className={classes.link}>Show more..</Link>
+        </Box>
+        </>
       ) : null }
       </Paper>
     </>
