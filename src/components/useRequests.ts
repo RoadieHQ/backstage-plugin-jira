@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useApi } from '@backstage/core';
-import { useAsync } from 'react-use';
+import { useAsync, useAsyncFn} from 'react-use';
 import convert from 'xml-js';
 import moment from 'moment';
 import { jiraApiRef } from '../api';
 import { ActivityStreamEntry, ActivityStreamElement } from '../types';
+import { AxiosError } from 'axios';
 
 const getPropertyValue = (entry: {}, property: string): string|null => entry[property]?._text || null;
 const getElapsedTime = (start: string) => moment(start).fromNow();
@@ -29,43 +30,20 @@ const decodeHtml = (html: string) => {
   return txt.value;
 };
 
-export const useIssuesCounters = (projectKey: string) => {
-  const api = useApi(jiraApiRef);
-
-  const getIssuesCounters = useCallback(async () => {
-    try {
-      const response = await api.getIssuesCounters(projectKey);
-      return response;
-    } catch (err) {
-      // if(err.response.status === 404) return Promise.reject({
-      //   message: 'Something goes wrong. Please make sure that you configured app-config.yaml correctly with your credentials and Jira url.'
-      // })
-      return Promise.reject({
-        message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
-      });
-    }
-  }, [api, projectKey]);
-  
-  const {loading, value, error} = useAsync(() => getIssuesCounters(), []);
-
-  return {
-    issuesLoading: loading,
-    issues: value,
-    issuesError: error,
-  };
-}
+const handleError = (error: AxiosError) => Promise.reject({
+  message: error?.response?.data?.errorMessages.length && error.response.data.errorMessages[0] || error.request
+});
 
 export const useActivityStream = () => {
   const api = useApi(jiraApiRef);
 
-  const getIssuesCounters = useCallback(async () => {
+  const getActivityStream = useCallback(async () => {
     try {
       const response = await api.getActivityStream();
       const parsedData = JSON.parse(convert.xml2json(response, {compact: true, spaces: 2}));
       const mappedData = parsedData.feed.entry.map((entry: ActivityStreamEntry) => {
         const time = getPropertyValue(entry, 'updated');
         const icon = entry.link[1]._attributes;
-
         return {
           id: getPropertyValue(entry, 'id'),
           time: {
@@ -83,61 +61,84 @@ export const useActivityStream = () => {
       }) as Array<ActivityStreamElement>;
       return mappedData;
     } catch (err) {
-      return Promise.reject({message: err?.response?.data?.errorMessages[0] || err.request});
+      return handleError(err);
     }
   }, [api]);
   
-  const {loading, value, error} = useAsync(() => getIssuesCounters(), []);
+  const {loading, value, error} = useAsync(() => getActivityStream(), []);
 
   return {
     activitesLoading: loading,
     activities: value,
     activitiesError: error,
   };
-}
+};
 
-export const useProjectInfo = (projectKey: string) => {
+export const useProjectInfo = (
+  projectKey: string,
+  componentsNames: Array<string>,
+  statusesNames: Array<string>
+) => {
   const api = useApi(jiraApiRef);
 
-  const getProjectInfo = useCallback(async () => {
+  const getProjectDetails = useCallback(async () => {
     try {
-      const response = await api.getProjectInfo(projectKey);
-      return response;
+      setTimeout(() => (document.activeElement as HTMLElement).blur());
+      return await api.getProjectDetails(projectKey, componentsNames, statusesNames);
     } catch (err) {
-      return Promise.reject({
-        message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
-      });
+      return handleError(err);
+    }
+  }, [api, projectKey, componentsNames, statusesNames]);
+  
+  const [state, fetchProjectInfo] = useAsyncFn(() => getProjectDetails(), [componentsNames, statusesNames]);
+
+  useEffect(() => {
+    fetchProjectInfo();
+  }, [componentsNames, statusesNames, fetchProjectInfo]);
+
+  return {
+    projectLoading: state.loading,
+    project: state?.value?.project,
+    issues: state?.value?.issues,
+    projectError: state.error,
+    fetchProjectInfo,
+  };
+};
+
+export const useComponents = (projectKey: string) => {
+  const api = useApi(jiraApiRef);
+
+  const getComponenets = useCallback(async () => {
+    try {
+      return await api.getComponenets(projectKey);
+    } catch (err) {
+      return handleError(err);
     }
   }, [api, projectKey]);
   
-  const {loading, value, error} = useAsync(() => getProjectInfo(), []);
-
+  const {loading, value, error} = useAsync(() => getComponenets(), []);
   return {
-    projectLoading: loading,
-    project: value,
-    projectError: error,
+    componentsLoading: loading,
+    components: value,
+    componentsError: error,
   };
-}
+};
 
-export const useProjects = (projectKey: string) => {
+export const useStatuses = () => {
   const api = useApi(jiraApiRef);
 
   const getStatuses = useCallback(async () => {
     try {
-      const response = await api.getStatuses(projectKey);
-      return response;
+      return await api.getStatuses();
     } catch (err) {
-      return Promise.reject({
-        message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
-      });
+      return handleError(err);
     }
-  }, [api, projectKey]);
+  }, [api]);
   
   const {loading, value, error} = useAsync(() => getStatuses(), []);
-
   return {
-    projectsLoading: loading,
-    projects: value,
-    projectsError: error,
+    statusesLoading: loading,
+    statuses: value,
+    statusesError: error,
   };
-}
+};

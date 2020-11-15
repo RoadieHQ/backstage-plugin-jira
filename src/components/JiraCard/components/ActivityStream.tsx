@@ -96,7 +96,6 @@ export const ActivityStream = () => {
   const showMore = useCallback((e) => {
     e.preventDefault();
   }, []);
-
   if(activitiesError) return null; // Remove activity stream on error
 
   return (

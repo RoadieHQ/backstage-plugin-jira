@@ -15,22 +15,25 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { Dispatch, SetStateAction } from 'react';
 
 export type EntityProps = {
   entity: Entity;
 }
 
+export type SelectorsProps = {
+  projectKey: string;
+  componentsNames: Array<string>;
+  statusesNames: Array<string>;
+  setStatusesNames: Dispatch<SetStateAction<Array<string>>>;
+  setComponentsNames: Dispatch<SetStateAction<Array<string>>>;
+  fetchProjectInfo: () => Promise<any>;
+}
+
+
 export type IssueType = {
   name: string;
   iconUrl: string;
-}
-  
-export type Issue = {
-  key: string;
-  total: number;
-  fields: {
-    issuetype: IssueType
-  }
 }
 
 export type IssuesCounter = {
@@ -70,10 +73,23 @@ export type ActivityStreamEntry = {
   }>;
 }
 
-export type ProjectType = {
+export type Project = {
   name: string;
-  avatarsUrls: {
+  avatarUrls: {
     [key: string]: string;
-  }
+  };
+  issueTypes: Array<{
+    name: string;
+  }>;
+  self: string;
+  url: string;
   projectTypeKey: string;
 };
+
+export type Component = {
+  name: string;
+}
+
+export type Status = {
+  name: string;
+}

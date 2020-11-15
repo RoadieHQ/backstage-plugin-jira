@@ -16,7 +16,7 @@
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
 import axios from 'axios';
-import { IssuesCounter, IssueType } from '../types';
+import { IssuesCounter, IssueType, Project, Component, Status } from '../types';
 
 export const jiraApiRef = createApiRef<JiraAPI>({
   id: 'plugin.jira.service',
@@ -43,24 +43,35 @@ export class JiraAPI {
     this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
   }
 
+  private generateProjectUrl = (url: string) => new URL(url).origin;
+
   private async getApiUrl() {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
     return `${proxyUrl}${this.proxyPath}`;
   }
+  private convertToString = (arrayElement: Array<string>): string =>
+    arrayElement
+    .filter(Boolean)
+    .map(i => `'${i}'`).join(',');
 
-  private async getIssuesStatuses(projectKey: string): Promise<Array<IssueType>> {
-    const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}${REST_API}project/${projectKey}`);
-    const statusesNames = request.data.issueTypes.map((status: IssueType) => ({
-      name: status.name,
-      iconUrl: status.iconUrl,
-    }));
-    return statusesNames;
-  }
-
-  private async getIssuesWithStatusCounter(apiUrl: string, projectKey: string, issueStatus: string, issueIcon: string) {
+  private async getIssuesCountByType(
+    apiUrl: string,
+    projectKey: string,
+    componentsNames: Array<string>,
+    statusesNames: Array<string>,
+    issueType: string,
+    issueIcon: string
+  ) {
+    const componentsString = this.convertToString(componentsNames);
+    const statusesString = this.convertToString(statusesNames);
+    const jql = `
+      project = "${projectKey}"
+      AND issuetype = "${issueType}"
+      ${statusesString ? `AND status in (${statusesString})` : ''}
+      ${componentsString ? `AND component in (${componentsString})` : ''}
+    `;
     const data = {
-      jql: `project = ${projectKey} AND issuetype = ${issueStatus}`,
+      jql,
       maxResults: 1,
       fields: ['issuetype'],
     };
@@ -68,53 +79,63 @@ export class JiraAPI {
     const response = request.data;
     return {
       total: response.total,
-      name: issueStatus,
+      name: issueType,
       iconUrl: issueIcon,
     } as IssuesCounter;
   };
 
-  async getIssuesCounters(projectKey: string) {
-    const apiUrl = await this.getApiUrl();
-    const issuesStatuses = await this.getIssuesStatuses(projectKey);
-    const issuesWithStatus = await Promise.all(
-      issuesStatuses.map(issue => {
-        const issueStatus = issue.name;
-        const issueIcon = issue.iconUrl;
-        return this.getIssuesWithStatusCounter(apiUrl, projectKey, issueStatus, issueIcon)
-      })
-    ) as Array<IssuesCounter>;
-    return issuesWithStatus.map(status => ({
-      ...status,
-    }));
-  }
-
-  async getProjectInfo(projectKey: string) {
+  async getProjectDetails(projectKey: string, componentsNames: Array<string>, statusesNames: Array<string>) {
     const apiUrl = await this.getApiUrl();
     const request = await axios(`${apiUrl}${REST_API}project/${projectKey}`);
-    const project = request.data;
+    const project = request.data as Project;
+
+    // Generate counters for each issue type
+    const issuesTypes = project.issueTypes.map((status: IssueType) => ({
+      name: status.name,
+      iconUrl: status.iconUrl,
+    }));
+  
+    const issuesCounterByType = await Promise.all(
+      issuesTypes.map(issue => {
+        const issueType = issue.name;
+        const issueIcon = issue.iconUrl;
+        return this.getIssuesCountByType(apiUrl, projectKey, componentsNames, statusesNames, issueType, issueIcon)
+      })
+    );
+  
     return {
-      name: project.name,
-      iconUrl: project.avatarUrls['16x16'],
-      type: project.projectTypeKey,
+      project: {
+        name: project.name,
+        iconUrl: project.avatarUrls['16x16'],
+        type: project.projectTypeKey,
+        url: this.generateProjectUrl(project.self),
+      },
+      issues: issuesCounterByType.length ? issuesCounterByType.map(status => ({
+        ...status,
+      })) : []
     };
   }
 
   async getActivityStream() {
     const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}/activity?maxResults=10&os_authType=basic`)
-    .then(res => Promise.resolve(res))
-    .catch(err => Promise.reject({
-      message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
-    })); 
-    return request.data;  
+    const request = await axios(`${apiUrl}activity?maxResults=10&os_authType=basic`);
+    const activityStream = request.data;
+    return activityStream; 
   }
 
-  async getStatuses(projectKey: string) {
+  async getComponenets(projectKey: string) {
     const apiUrl = await this.getApiUrl();
-    await axios(`${apiUrl}${REST_API}project/${projectKey}/statuses`)
-    .then(res => Promise.resolve(res))
-    .catch(err => Promise.reject({
-      message: err?.response?.data?.errorMessages.length && err.response.data.errorMessages[0] || err.request
-    })); 
+    const request = await axios(`${apiUrl}${REST_API}project/${projectKey}/components`);
+    const components = request.data as Array<Component>;
+    const formattedComponents = components.length ? components.map((component) => component.name) : [];
+    return formattedComponents;
+  }
+
+  async getStatuses() {
+    const apiUrl = await this.getApiUrl();
+    const request = await axios(`${apiUrl}${REST_API}status`);
+    const statuses = request.data as Array<Status>;
+    const formattedComponents = statuses.length ? [...new Set(statuses.map((component) => component.name))] : [];
+    return formattedComponents;
   }
 }

@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { MissingAnnotationEmptyState } from '@backstage/core';
-import { Route, Routes } from 'react-router';
-import { rootRouteRef } from '../plugin';
-import { JiraPage } from './JiraPage';
 import { JIRA_PROJECT_KEY_ANNOTATION } from './useProjectEntity';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   entity?.metadata.annotations?.[JIRA_PROJECT_KEY_ANNOTATION];
 
-export const Router = ({ entity }: { entity: Entity }) =>
-  !isPluginApplicableToEntity(entity) ? (
-    <MissingAnnotationEmptyState annotation={JIRA_PROJECT_KEY_ANNOTATION} />
-  ) : (
-    <Routes>
-      <Route
-        path={`/${rootRouteRef.path}`}
-        element={<JiraPage entity={entity} />}
-      />
-    </Routes>
-  );
