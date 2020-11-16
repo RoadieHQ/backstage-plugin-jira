@@ -116,7 +116,7 @@ export const ActivityStream = () => {
   }, [size, activities]);
 
 
-  if(activitiesError) return null; // Remove activity stream on error
+  if(activitiesError) return null; // Hide activity stream on error
 
   return (
     <>
@@ -158,4 +158,4 @@ export const ActivityStream = () => {
       </Paper>
     </>
   );
- }
+}

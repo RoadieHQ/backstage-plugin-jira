@@ -17,6 +17,10 @@
 import { Entity } from '@backstage/catalog-model';
 import { Dispatch, SetStateAction } from 'react';
 
+type PropertyValue = {
+  _text: string;
+};
+
 export type EntityProps = {
   entity: Entity;
 };
@@ -36,10 +40,6 @@ export type IssuesCounter = {
   total: number;
   name: string;
   iconUrl: string;
-};
-
-type PropertyValue = {
-  _text: string;
 };
 
 export type ActivityProperties =
@@ -63,6 +63,7 @@ export type ActivityStreamElement = {
   summary?: string;
   content?: string;
 };
+
 export type ActivityStreamKeys =
   | 'updated'
   | 'title'
@@ -96,6 +97,12 @@ export type Project = {
   self: string;
   url: string;
   projectTypeKey: string;
+};
+
+export type ProjectDetailsProps = {
+  name: string;
+  type: string;
+  iconUrl: string;
 };
 
 export type Status = {

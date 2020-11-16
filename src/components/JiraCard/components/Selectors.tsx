@@ -64,6 +64,7 @@ export const Selectors: FC<SelectorsProps> = ({
     setStatusesNames(event.target.value as string[]);
   };
 
+  // Show selector only when needed
   return !statusesLoading && !statusesError && statuses && statuses.length >= 2 ? (
     <Box py={2}>
       <Divider />
@@ -92,4 +93,4 @@ export const Selectors: FC<SelectorsProps> = ({
       </Box>
     </Box>
   ) : null;
-}
+};

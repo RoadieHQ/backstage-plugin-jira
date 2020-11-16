@@ -27,7 +27,7 @@ import Alert from '@material-ui/lab/Alert';
 import { InfoCard, Progress } from '@backstage/core';
 import { useProjectInfo } from '../useRequests';
 import { useProjectEntity } from '../useProjectEntity';
-import { EntityProps } from '../../types';
+import { EntityProps, ProjectDetailsProps } from '../../types';
 import { Status } from './components/Status';
 import { ActivityStream } from './components/ActivityStream';
 import { Selectors } from './components/Selectors';
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const CardProjectDetails = ({ project }: { project: any}) => (
+const CardProjectDetails = ({ project }: { project: ProjectDetailsProps }) => (
   <Box display="flex" alignItems="center">
     <Avatar alt="" src={project.iconUrl} />
     <Box component="span" ml={1}> {project.name} | {project.type}</Box>

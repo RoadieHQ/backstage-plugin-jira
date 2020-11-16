@@ -35,5 +35,5 @@ export const Status = ({name, iconUrl} : {name: string, iconUrl: string}) => {
         </Typography>
       </Box>
     </Box>
-  )
-}
+  );
+};
