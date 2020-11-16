@@ -28,7 +28,7 @@ import {
   createStyles,
   makeStyles,
 } from '@material-ui/core';
-import { useComponents, useStatuses } from '../../useRequests';
+import { useStatuses } from '../../useRequests';
 import { SelectorsProps } from '../../../types';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -53,75 +53,42 @@ const MenuProps = {
 };
 
 export const Selectors: FC<SelectorsProps> = ({
-  projectKey,
-  componentsNames,
   statusesNames,
   setStatusesNames,
-  setComponentsNames,
   fetchProjectInfo,
 }) => {
   const classes = useStyles();
-  const { components, componentsLoading, componentsError } = useComponents(projectKey);
   const { statuses, statusesLoading, statusesError } = useStatuses();
-  const handleComponentsChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setComponentsNames(event.target.value as string[]);
-  };
 
   const handleStatusesChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setStatusesNames(event.target.value as string[]);
   };
 
-  return !componentsLoading && !statusesLoading && !componentsError && !statusesError ? (
+  return !statusesLoading && !statusesError && statuses && statuses.length >= 2 ? (
     <Box py={2}>
       <Divider />
       <Box display="flex" justifyContent="flex-end" py={2}>
-        {statuses.length >= 2 ? (
-          <FormControl className={classes.formControl}>
-            <InputLabel id="select-multiple-projects-statuses">Statuses</InputLabel>
-            <Select
-              labelId="select-statuses-label"
-              id="select-statuses"
-              multiple
-              value={statusesNames}
-              onChange={handleStatusesChange}
-              input={<Input />}
-              renderValue={(selected: Array<string>) => selected.filter(Boolean).join(', ')}
-              MenuProps={MenuProps}
-              onClose={fetchProjectInfo}
-            >
-              {statuses.map((status) => (
-                <MenuItem key={status} value={status}>
-                  <Checkbox checked={statusesNames.indexOf(status) > -1} />
-                  <ListItemText primary={status} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : null }
-
-        {components.length >= 2 ? (
-          <FormControl className={classes.formControl}>
-            <InputLabel id="select-multiple-projects-components">Components</InputLabel>
-            <Select
-              labelId="select-components-label"
-              id="select-components"
-              multiple
-              value={componentsNames}
-              onChange={handleComponentsChange}
-              input={<Input />}
-              renderValue={(selected: Array<string>) => selected.filter(Boolean).join(', ')}
-              MenuProps={MenuProps}
-              onClose={fetchProjectInfo}
-            >
-              {components.map((component) => (
-                <MenuItem key={component} value={component}>
-                  <Checkbox checked={componentsNames.indexOf(component) > -1} />
-                  <ListItemText primary={component} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : null }
+        <FormControl className={classes.formControl}>
+          <InputLabel id="select-multiple-projects-statuses">Statuses</InputLabel>
+          <Select
+            labelId="select-statuses-label"
+            id="select-statuses"
+            multiple
+            value={statusesNames}
+            onChange={handleStatusesChange}
+            input={<Input />}
+            renderValue={(selected) => (selected as Array<string>).filter(Boolean).join(', ')}
+            MenuProps={MenuProps}
+            onClose={fetchProjectInfo}
+          >
+            {statuses.map((status) => (
+              <MenuItem key={status} value={status}>
+                <Checkbox checked={statusesNames.indexOf(status) > -1} />
+                <ListItemText primary={status} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
     </Box>
   ) : null;

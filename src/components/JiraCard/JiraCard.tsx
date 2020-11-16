@@ -57,9 +57,8 @@ const CardProjectDetails = ({ project }: { project: any}) => (
 export const JiraCard: FC<EntityProps> = ({ entity }) => {
   const classes = useStyles();
   const { projectKey, component } = useProjectEntity(entity);
-  const [componentsNames, setComponentsNames] = useState<Array<string>>([component]);
   const [statusesNames, setStatusesNames] = useState<Array<string>>([]);
-  const { project, issues, projectLoading, projectError, fetchProjectInfo } = useProjectInfo(projectKey, componentsNames, statusesNames);
+  const { project, issues, projectLoading, projectError, fetchProjectInfo } = useProjectInfo(projectKey, component, statusesNames);
 
   return (
     <InfoCard
@@ -90,11 +89,8 @@ export const JiraCard: FC<EntityProps> = ({ entity }) => {
             )) }
           </Grid>
           <Selectors
-            projectKey={projectKey}
-            componentsNames={componentsNames}
             statusesNames={statusesNames}
             setStatusesNames={setStatusesNames}
-            setComponentsNames={setComponentsNames}
             fetchProjectInfo={fetchProjectInfo}
           />
           <ActivityStream />

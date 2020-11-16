@@ -19,10 +19,10 @@ import { useAsync, useAsyncFn} from 'react-use';
 import convert from 'xml-js';
 import moment from 'moment';
 import { jiraApiRef } from '../api';
-import { ActivityStreamEntry, ActivityStreamElement } from '../types';
+import { ActivityStreamEntry, ActivityStreamElement, ActivityStreamKeys } from '../types';
 import { AxiosError } from 'axios';
 
-const getPropertyValue = (entry: {}, property: string): string|null => entry[property]?._text || null;
+const getPropertyValue = (entry: ActivityStreamEntry, property: ActivityStreamKeys): string => entry[property]?._text;
 const getElapsedTime = (start: string) => moment(start).fromNow();
 const decodeHtml = (html: string) => {
   const txt = document.createElement("textarea");
@@ -34,14 +34,14 @@ const handleError = (error: AxiosError) => Promise.reject({
   message: error?.response?.data?.errorMessages.length && error.response.data.errorMessages[0] || error.request
 });
 
-export const useActivityStream = (size) => {
+export const useActivityStream = (size: number) => {
   const api = useApi(jiraApiRef);
 
   const getActivityStream = useCallback(async () => {
     try {
       const response = await api.getActivityStream(size);
       const parsedData = JSON.parse(convert.xml2json(response, {compact: true, spaces: 2}));
-      const mappedData = parsedData.feed.entry.map((entry: ActivityStreamEntry) => {
+      const mappedData = parsedData.feed.entry.map((entry: ActivityStreamEntry): ActivityStreamElement => {
         const time = getPropertyValue(entry, 'updated');
         const icon = entry.link[1]._attributes;
         return {
@@ -55,11 +55,11 @@ export const useActivityStream = (size) => {
             url: icon.href,
             title: icon.title,
           },
-          summary: decodeHtml(getPropertyValue(entry, 'summary')),
-          content: decodeHtml(getPropertyValue(entry, 'content')),
+          summary: decodeHtml(getPropertyValue(entry, 'summary') || ''),
+          content: decodeHtml(getPropertyValue(entry, 'content') || ''),
         }
-      }) as Array<ActivityStreamElement>;
-      return mappedData;
+      });
+      return mappedData as Array<ActivityStreamElement>;
     } catch (err) {
       return handleError(err);
     }
@@ -80,7 +80,7 @@ export const useActivityStream = (size) => {
 
 export const useProjectInfo = (
   projectKey: string,
-  componentsNames: Array<string>,
+  component: string,
   statusesNames: Array<string>
 ) => {
   const api = useApi(jiraApiRef);
@@ -88,17 +88,17 @@ export const useProjectInfo = (
   const getProjectDetails = useCallback(async () => {
     try {
       setTimeout(() => (document.activeElement as HTMLElement).blur());
-      return await api.getProjectDetails(projectKey, componentsNames, statusesNames);
+      return await api.getProjectDetails(projectKey, component, statusesNames);
     } catch (err) {
       return handleError(err);
     }
-  }, [api, projectKey, componentsNames, statusesNames]);
+  }, [api, projectKey, component, statusesNames]);
   
-  const [state, fetchProjectInfo] = useAsyncFn(() => getProjectDetails(), [componentsNames, statusesNames]);
+  const [state, fetchProjectInfo] = useAsyncFn(() => getProjectDetails(), [statusesNames]);
 
   useEffect(() => {
     fetchProjectInfo();
-  }, [componentsNames, statusesNames, fetchProjectInfo]);
+  }, [statusesNames, fetchProjectInfo]);
 
   return {
     projectLoading: state.loading,
@@ -106,25 +106,6 @@ export const useProjectInfo = (
     issues: state?.value?.issues,
     projectError: state.error,
     fetchProjectInfo,
-  };
-};
-
-export const useComponents = (projectKey: string) => {
-  const api = useApi(jiraApiRef);
-
-  const getComponenets = useCallback(async () => {
-    try {
-      return await api.getComponenets(projectKey);
-    } catch (err) {
-      return handleError(err);
-    }
-  }, [api, projectKey]);
-  
-  const {loading, value, error} = useAsync(() => getComponenets(), []);
-  return {
-    componentsLoading: loading,
-    components: value,
-    componentsError: error,
   };
 };
 

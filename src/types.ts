@@ -22,11 +22,8 @@ export type EntityProps = {
 };
 
 export type SelectorsProps = {
-  projectKey: string;
-  componentsNames: Array<string>;
   statusesNames: Array<string>;
   setStatusesNames: Dispatch<SetStateAction<Array<string>>>;
-  setComponentsNames: Dispatch<SetStateAction<Array<string>>>;
   fetchProjectInfo: () => Promise<any>;
 };
 
@@ -45,11 +42,18 @@ type PropertyValue = {
   _text: string;
 };
 
+export type ActivityProperties =
+  | 'updated'
+  | 'title'
+  | 'id'
+  | 'summary'
+  | 'content';
+
 export type ActivityStreamElement = {
   id: string;
   time: {
     elapsed: string;
-    value: Date;
+    value: string;
   };
   title: string;
   icon: {
@@ -59,10 +63,19 @@ export type ActivityStreamElement = {
   summary?: string;
   content?: string;
 };
+export type ActivityStreamKeys =
+  | 'updated'
+  | 'title'
+  | 'summary'
+  | 'content'
+  | 'id';
 
 export type ActivityStreamEntry = {
   updated: PropertyValue;
   title: PropertyValue;
+  summary: PropertyValue;
+  content: PropertyValue;
+  id: PropertyValue;
   link: Array<{
     _attributes: {
       href: string;
@@ -78,14 +91,11 @@ export type Project = {
   };
   issueTypes: Array<{
     name: string;
+    iconUrl: string;
   }>;
   self: string;
   url: string;
   projectTypeKey: string;
-};
-
-export type Component = {
-  name: string;
 };
 
 export type Status = {

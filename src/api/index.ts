@@ -16,7 +16,7 @@
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
 import axios from 'axios';
-import { IssuesCounter, IssueType, Project, Component, Status } from '../types';
+import { IssuesCounter, IssueType, Project, Status } from '../types';
 
 export const jiraApiRef = createApiRef<JiraAPI>({
   id: 'plugin.jira.service',
@@ -49,6 +49,7 @@ export class JiraAPI {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
     return `${proxyUrl}${this.proxyPath}`;
   }
+
   private convertToString = (arrayElement: Array<string>): string =>
     arrayElement
     .filter(Boolean)
@@ -57,18 +58,17 @@ export class JiraAPI {
   private async getIssuesCountByType(
     apiUrl: string,
     projectKey: string,
-    componentsNames: Array<string>,
+    component: string,
     statusesNames: Array<string>,
     issueType: string,
     issueIcon: string
   ) {
-    const componentsString = this.convertToString(componentsNames);
     const statusesString = this.convertToString(statusesNames);
     const jql = `
       project = "${projectKey}"
       AND issuetype = "${issueType}"
       ${statusesString ? `AND status in (${statusesString})` : ''}
-      ${componentsString ? `AND component in (${componentsString})` : ''}
+      ${component ? `AND component = ${component}` : ''}
     `;
     const data = {
       jql,
@@ -84,7 +84,7 @@ export class JiraAPI {
     } as IssuesCounter;
   };
 
-  async getProjectDetails(projectKey: string, componentsNames: Array<string>, statusesNames: Array<string>) {
+  async getProjectDetails(projectKey: string, component: string, statusesNames: Array<string>) {
     const apiUrl = await this.getApiUrl();
     const request = await axios(`${apiUrl}${REST_API}project/${projectKey}`);
     const project = request.data as Project;
@@ -99,7 +99,7 @@ export class JiraAPI {
       issuesTypes.map(issue => {
         const issueType = issue.name;
         const issueIcon = issue.iconUrl;
-        return this.getIssuesCountByType(apiUrl, projectKey, componentsNames, statusesNames, issueType, issueIcon)
+        return this.getIssuesCountByType(apiUrl, projectKey, component, statusesNames, issueType, issueIcon)
       })
     );
   
@@ -123,19 +123,11 @@ export class JiraAPI {
     return activityStream; 
   }
 
-  async getComponenets(projectKey: string) {
-    const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}${REST_API}project/${projectKey}/components`);
-    const components = request.data as Array<Component>;
-    const formattedComponents = components.length ? components.map((component) => component.name) : [];
-    return formattedComponents;
-  }
-
   async getStatuses() {
     const apiUrl = await this.getApiUrl();
     const request = await axios(`${apiUrl}${REST_API}status`);
     const statuses = request.data as Array<Status>;
-    const formattedComponents = statuses.length ? [...new Set(statuses.map((component) => component.name))] : [];
-    return formattedComponents;
+    const formattedStatuses = statuses.length ? [...new Set(statuses.map((status) => status.name))] : [];
+    return formattedStatuses;
   }
 }

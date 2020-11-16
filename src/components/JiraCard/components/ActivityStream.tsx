@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Box, Divider, Link, Paper, Typography, Tooltip, makeStyles, createStyles, Theme, } from '@material-ui/core';
-import { Progress } from '@backstage/core';
+import { appThemeApiRef, Progress, useApi } from '@backstage/core';
 import parse, { domToReact, attributesToProps, DomElement } from 'html-react-parser';
 import { useActivityStream } from '../../useRequests';
 
@@ -66,6 +66,17 @@ const useStyles = makeStyles((theme: Theme) =>
         fontSize: '0.7rem',
       }
     },
+    paperDark: {
+      backgroundColor: '#333',
+      color: '#fff',
+      '& hr': {
+        backgroundColor: 'rgba(255, 255, 255, 0.12)',
+      },
+      '& blockquote': {
+        backgroundColor: '#424242',
+        color: '#fff',
+      }
+    },
     time: {
       lineHeight: 0,
       marginLeft: theme.spacing(1),
@@ -81,16 +92,19 @@ const options = {
     if (!node) return null;
  
     if (node.name === 'a') { // Add target blank to all urls
-      const props = attributesToProps(node.attribs);
-      return <a {...props} target="_blank" rel="noopener noreferrer">{domToReact(node.children, options)}</a>;
+      const props = attributesToProps(node.attribs as {[key: string]: string});
+      return <a {...props} target="_blank" rel="noopener noreferrer">{node.children && domToReact(node.children)}</a>;
     }
     return null;
   }
 };
 
+const getTheme = () => window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
 export const ActivityStream = () => {
   const classes = useStyles();
-  const [size, setSize] = useState(10);
+  const [size, setSize] = useState(25);
+  const theme = useApi(appThemeApiRef).getActiveThemeId() || getTheme(); // Fallback for Auto mode
   const [disableButton, setDisableButton] = useState(false);
   const { activities, activitesLoading, activitiesError } = useActivityStream(size);
 
@@ -107,7 +121,7 @@ export const ActivityStream = () => {
   return (
     <>
       <Typography variant="subtitle1">Activity stream</Typography>
-      <Paper className={classes.paper}>
+      <Paper className={`${classes.paper} ${theme === 'dark' ? classes.paperDark : ''}`}>
       { activitesLoading ? <Progress /> : null }
       { activities ? (
         <>

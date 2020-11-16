@@ -1,13 +1,82 @@
-# jira
+# Jira Plugin for Backstage
 
-Welcome to the jira plugin!
+![a Jira plugin for Backstage](./docs/jira-plugin.gif)
 
-_This plugin was created through the Backstage CLI_
+## Features
 
-## Getting started
+- Show project details and tasks
+- Activity Stream
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/jira](http://localhost:3000/jira).
+## How to add Jira project dependency to Backstage app
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+1. If you have standalone app (you didn't clone this repo), then do
+
+```bash
+yarn add @roadiehq/backstage-plugin-jira
+```
+
+2. Add proxy config:
+
+```yaml
+// app-config.yaml
+proxy:
+  '/jira/api':
+    target: [JIRA_URL]
+    headers:
+      Authorization:
+        $env: JIRA_TOKEN
+      Accept: 'application/json'
+      Content-Type: 'application/json'
+      X-Atlassian-Token: 'no-check'
+      User-Agent: "MY-UA-STRING"
+```
+
+3. Add plugin to the list of plugins:
+
+```ts
+// packages/app/src/plugins.ts
+export { plugin as Jira } from '@roadiehq/backstage-plugin-jira';
+```
+
+4. Add plugin API to your Backstage instance:
+
+```ts
+// packages/app/src/components/catalog/EntityPage.tsx
+import {
+  JiraCard
+  isPluginApplicableToEntity as isJiraAvailable,
+} from '@roadiehq/backstage-plugin-jira';
+
+const OverviewContent = ({ entity }: { entity: Entity }) => (
+
+  <Grid container spacing={3} alignItems="stretch">
+    ...
+    {isJiraAvailable(entity) && (
+      <Grid item md={6}>
+        <JiraCard entity={entity} />
+      </Grid>
+    )}
+  </Grid>
+);
+```
+
+## How to use Jira plugin in Backstage
+
+1. Add annotation to the yaml config file of a component:
+
+```yaml
+metadata:
+  annotations:
+    jira/project-key: [example-jira-project-key]
+    jira/component: [example-component] // optional, you might skip value to fetch data for all components
+```
+
+2. Get and provide `JIRA_TOKEN` as env variable in following format:
+"Basic base64(jira-mail@example.com:JIRA_TOKEN)" for example:
+```Basic: ZXhhbXBsZV9qaXJhQGV4YW1wbGUuY29tOjU1Q3NUSEoxWW1oTVdJSFptdGJXNUUxOA==```
+
+## Links
+
+- [Backstage](https://backstage.io)
+- [Further instructons](https://roadie.io/backstage/plugins/buildkite)
+- Get hosted, managed Backstage for your company: https://roadie.io
