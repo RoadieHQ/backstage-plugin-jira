@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRouteRef, createApiFactory, discoveryApiRef } from '@backstage/core';
+import {
+  createPlugin,
+  createRouteRef,
+  createApiFactory,
+  discoveryApiRef,
+} from '@backstage/core';
 import { jiraApiRef, JiraAPI } from './api';
 
 export const rootRouteRef = createRouteRef({

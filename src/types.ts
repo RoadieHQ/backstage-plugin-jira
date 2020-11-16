@@ -19,7 +19,7 @@ import { Dispatch, SetStateAction } from 'react';
 
 export type EntityProps = {
   entity: Entity;
-}
+};
 
 export type SelectorsProps = {
   projectKey: string;
@@ -28,39 +28,37 @@ export type SelectorsProps = {
   setStatusesNames: Dispatch<SetStateAction<Array<string>>>;
   setComponentsNames: Dispatch<SetStateAction<Array<string>>>;
   fetchProjectInfo: () => Promise<any>;
-}
-
+};
 
 export type IssueType = {
   name: string;
   iconUrl: string;
-}
+};
 
 export type IssuesCounter = {
-  total: number,
-  name: string,
+  total: number;
+  name: string;
   iconUrl: string;
-}
+};
 
 type PropertyValue = {
   _text: string;
-}
-
+};
 
 export type ActivityStreamElement = {
   id: string;
   time: {
     elapsed: string;
     value: Date;
-  },
+  };
   title: string;
   icon: {
     url: string;
     title: string;
-  }
+  };
   summary?: string;
   content?: string;
-}
+};
 
 export type ActivityStreamEntry = {
   updated: PropertyValue;
@@ -69,9 +67,9 @@ export type ActivityStreamEntry = {
     _attributes: {
       href: string;
       title: string;
-    }
+    };
   }>;
-}
+};
 
 export type Project = {
   name: string;
@@ -88,8 +86,8 @@ export type Project = {
 
 export type Component = {
   name: string;
-}
+};
 
 export type Status = {
   name: string;
-}
+};
