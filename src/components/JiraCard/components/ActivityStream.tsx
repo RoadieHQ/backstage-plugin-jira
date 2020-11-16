@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Divider, Link, Paper, Typography, Tooltip, makeStyles, createStyles, Theme, } from '@material-ui/core';
 import { Progress } from '@backstage/core';
 import parse, { domToReact, attributesToProps, DomElement } from 'html-react-parser';
 import { useActivityStream } from '../../useRequests';
-
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,7 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     link: {
       cursor: 'pointer',
-    }
+    },
   }),
 );
 
@@ -81,7 +80,7 @@ const options = {
   replace: (node: DomElement) => {
     if (!node) return null;
  
-    if (node.name === 'a') { // Add target blank to all a hrefs
+    if (node.name === 'a') { // Add target blank to all urls
       const props = attributesToProps(node.attribs);
       return <a {...props} target="_blank" rel="noopener noreferrer">{domToReact(node.children, options)}</a>;
     }
@@ -91,11 +90,18 @@ const options = {
 
 export const ActivityStream = () => {
   const classes = useStyles();
-  const { activities, activitesLoading, activitiesError } = useActivityStream();
+  const [size, setSize] = useState(10);
+  const [disableButton, setDisableButton] = useState(false);
+  const { activities, activitesLoading, activitiesError } = useActivityStream(size);
 
-  const showMore = useCallback((e) => {
-    e.preventDefault();
-  }, []);
+  const showMore = useCallback(() => {
+    setSize(size + 10);
+    if(activities && activities.length < size) {
+      setDisableButton(true);
+    }
+  }, [size, activities]);
+
+
   if(activitiesError) return null; // Remove activity stream on error
 
   return (
@@ -125,7 +131,13 @@ export const ActivityStream = () => {
           </Box>
         ))}
         <Box display="flex" justifyContent="center" pt={1}>
-          <Link onClick={showMore} className={classes.link}>Show more..</Link>
+          {disableButton ? (
+              'No more activities'
+          ) : (
+            <Link onClick={showMore} className={classes.link}>
+              {activitesLoading ? 'Loading..' : 'Show more..'}
+          </Link>
+          )}
         </Box>
         </>
       ) : null }

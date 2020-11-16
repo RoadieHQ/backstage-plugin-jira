@@ -116,9 +116,9 @@ export class JiraAPI {
     };
   }
 
-  async getActivityStream() {
+  async getActivityStream(size: number) {
     const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}activity?maxResults=10&os_authType=basic`);
+    const request = await axios(`${apiUrl}activity?maxResults=${size}&os_authType=basic`);
     const activityStream = request.data;
     return activityStream; 
   }

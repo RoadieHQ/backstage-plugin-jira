@@ -34,12 +34,12 @@ const handleError = (error: AxiosError) => Promise.reject({
   message: error?.response?.data?.errorMessages.length && error.response.data.errorMessages[0] || error.request
 });
 
-export const useActivityStream = () => {
+export const useActivityStream = (size) => {
   const api = useApi(jiraApiRef);
 
   const getActivityStream = useCallback(async () => {
     try {
-      const response = await api.getActivityStream();
+      const response = await api.getActivityStream(size);
       const parsedData = JSON.parse(convert.xml2json(response, {compact: true, spaces: 2}));
       const mappedData = parsedData.feed.entry.map((entry: ActivityStreamEntry) => {
         const time = getPropertyValue(entry, 'updated');
@@ -63,14 +63,18 @@ export const useActivityStream = () => {
     } catch (err) {
       return handleError(err);
     }
-  }, [api]);
+  }, [api, size]);
   
-  const {loading, value, error} = useAsync(() => getActivityStream(), []);
+  const [state, fetchActivityStream] = useAsyncFn(() => getActivityStream(), [size]);
+
+  useEffect(() => {
+    fetchActivityStream();
+  }, [size, fetchActivityStream]);
 
   return {
-    activitesLoading: loading,
-    activities: value,
-    activitiesError: error,
+    activitesLoading: state.loading,
+    activities: state.value,
+    activitiesError: state.error,
   };
 };
 
