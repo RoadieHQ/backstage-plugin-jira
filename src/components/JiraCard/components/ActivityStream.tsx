@@ -15,7 +15,7 @@
  */
 import React, { useState, useCallback } from 'react';
 import { Box, Divider, Link, Paper, Typography, Tooltip, makeStyles, createStyles, Theme, } from '@material-ui/core';
-import { appThemeApiRef, Progress, useApi } from '@backstage/core';
+import { Progress } from '@backstage/core';
 import parse, { domToReact, attributesToProps, DomElement } from 'html-react-parser';
 import { useActivityStream } from '../../useRequests';
 
@@ -23,8 +23,8 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
       padding: theme.spacing(2),
-      backgroundColor: '#f6f8fa',
-      color: 'rgba(0, 0, 0, 0.87)',
+      backgroundColor: theme.palette.type === 'dark' ? '#333' : '#f6f8fa',
+      color: theme.palette.text.primary,
       marginTop: theme.spacing(1),
       overflowY: 'auto',
       maxHeight: '290px',
@@ -32,13 +32,13 @@ const useStyles = makeStyles((theme: Theme) =>
         color: theme.palette.primary.main,
       },
       '& hr': {
-        backgroundColor: 'rgba(0, 0, 0, 0.12)',
+        backgroundColor: theme.palette.divider,
         margin: theme.spacing(1, 0),
       },
       '& blockquote': {
-        background: "#e0f0ff",
+        background: theme.palette.type === 'dark' ? '#424242' : "#e0f0ff",
         borderLeft: "1px solid #c2d9ef",
-        color: "#222",
+        color: theme.palette.text.primary,
         fontStyle: "normal",
         margin: theme.spacing(1, 0),
         overflowX: "auto",
@@ -66,17 +66,6 @@ const useStyles = makeStyles((theme: Theme) =>
         fontSize: '0.7rem',
       }
     },
-    paperDark: {
-      backgroundColor: '#333',
-      color: '#fff',
-      '& hr': {
-        backgroundColor: 'rgba(255, 255, 255, 0.12)',
-      },
-      '& blockquote': {
-        backgroundColor: '#424242',
-        color: '#fff',
-      }
-    },
     time: {
       lineHeight: 0,
       marginLeft: theme.spacing(1),
@@ -99,12 +88,9 @@ const options = {
   }
 };
 
-const getTheme = () => window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-
 export const ActivityStream = () => {
   const classes = useStyles();
   const [size, setSize] = useState(25);
-  const theme = useApi(appThemeApiRef).getActiveThemeId() || getTheme(); // Fallback for Auto mode
   const [disableButton, setDisableButton] = useState(false);
   const { activities, activitesLoading, activitiesError } = useActivityStream(size);
 
@@ -121,7 +107,7 @@ export const ActivityStream = () => {
   return (
     <>
       <Typography variant="subtitle1">Activity stream</Typography>
-      <Paper className={`${classes.paper} ${theme === 'dark' ? classes.paperDark : ''}`}>
+      <Paper className={classes.paper}>
       { activitesLoading ? <Progress /> : null }
       { activities ? (
         <>
