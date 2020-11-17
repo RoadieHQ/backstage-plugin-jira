@@ -49,17 +49,17 @@ const useStyles = makeStyles((theme: Theme) =>
         display: 'none',
       },
       '&::-webkit-scrollbar-track': {
-        backgroundColor: '#F5F5F5',
+        backgroundColor: theme.palette.type === 'dark' ? '#555' : '#F5F5F5',
         borderRadius: '5px',
       },
       '&::-webkit-scrollbar': {
         width: '5px',
-        backgroundColor: '#F5F5F5',
+        backgroundColor: theme.palette.type === 'dark' ? '#555' : '#F5F5F5',
         borderRadius: '5px',
       },
       '&::-webkit-scrollbar-thumb': {
-        border: '1px solid #555555',
-        backgroundColor: '#555',
+        border: `1px solid ${theme.palette.type === 'dark' ? '#555' : '#F5F5F5'}`,
+        backgroundColor: theme.palette.type === 'dark' ? '#F5F5F5': '#555',
         borderRadius: '4px',
       },
       '& span': {
