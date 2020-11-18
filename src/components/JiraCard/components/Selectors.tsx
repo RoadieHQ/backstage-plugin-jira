@@ -28,7 +28,7 @@ import {
   createStyles,
   makeStyles,
 } from '@material-ui/core';
-import { useStatuses } from '../../useRequests';
+import { useStatuses } from '../../../hooks';
 import { SelectorsProps } from '../../../types';
 
 const useStyles = makeStyles((theme: Theme) =>

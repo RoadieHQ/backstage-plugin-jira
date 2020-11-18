@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { useEffect, useCallback } from 'react';
-import { useApi } from '@backstage/core';
-import { useAsync, useAsyncFn} from 'react-use';
 import convert from 'xml-js';
 import moment from 'moment';
-import { jiraApiRef } from '../api';
+import { useApi } from '@backstage/core';
+import { useAsyncFn} from 'react-use';
+import { handleError } from './utils';
 import { ActivityStreamEntry, ActivityStreamElement, ActivityStreamKeys } from '../types';
-import { AxiosError } from 'axios';
+import { jiraApiRef } from '../api';
 
 const getPropertyValue = (entry: ActivityStreamEntry, property: ActivityStreamKeys): string => entry[property]?._text;
 const getElapsedTime = (start: string) => moment(start).fromNow();
@@ -29,10 +29,6 @@ const decodeHtml = (html: string) => {
   txt.innerHTML = html;
   return txt.value;
 };
-
-const handleError = (error: AxiosError) => Promise.reject({
-  message: error?.response?.data?.errorMessages.length && error.response.data.errorMessages[0] || error.request
-});
 
 export const useActivityStream = (size: number) => {
   const api = useApi(jiraApiRef);
@@ -75,55 +71,5 @@ export const useActivityStream = (size: number) => {
     activitesLoading: state.loading,
     activities: state.value,
     activitiesError: state.error,
-  };
-};
-
-export const useProjectInfo = (
-  projectKey: string,
-  component: string,
-  statusesNames: Array<string>
-) => {
-  const api = useApi(jiraApiRef);
-
-  const getProjectDetails = useCallback(async () => {
-    try {
-      setTimeout(() => (document.activeElement as HTMLElement).blur());
-      return await api.getProjectDetails(projectKey, component, statusesNames);
-    } catch (err) {
-      return handleError(err);
-    }
-  }, [api, projectKey, component, statusesNames]);
-  
-  const [state, fetchProjectInfo] = useAsyncFn(() => getProjectDetails(), [statusesNames]);
-
-  useEffect(() => {
-    fetchProjectInfo();
-  }, [statusesNames, fetchProjectInfo]);
-
-  return {
-    projectLoading: state.loading,
-    project: state?.value?.project,
-    issues: state?.value?.issues,
-    projectError: state.error,
-    fetchProjectInfo,
-  };
-};
-
-export const useStatuses = () => {
-  const api = useApi(jiraApiRef);
-
-  const getStatuses = useCallback(async () => {
-    try {
-      return await api.getStatuses();
-    } catch (err) {
-      return handleError(err);
-    }
-  }, [api]);
-  
-  const {loading, value, error} = useAsync(() => getStatuses(), []);
-  return {
-    statusesLoading: loading,
-    statuses: value,
-    statusesError: error,
   };
 };

@@ -17,7 +17,7 @@ import React, { useState, useCallback } from 'react';
 import { Box, Divider, Link, Paper, Typography, Tooltip, makeStyles, createStyles, Theme, } from '@material-ui/core';
 import { Progress } from '@backstage/core';
 import parse, { domToReact, attributesToProps, DomElement } from 'html-react-parser';
-import { useActivityStream } from '../../useRequests';
+import { useActivityStream } from '../../../hooks';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

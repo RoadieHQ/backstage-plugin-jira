@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AxiosError } from 'axios';
 
-import { Entity } from '@backstage/catalog-model';
-import { JIRA_PROJECT_KEY_ANNOTATION } from '../hooks';
-
-export const isPluginApplicableToEntity = (entity: Entity) =>
-  entity?.metadata.annotations?.[JIRA_PROJECT_KEY_ANNOTATION];
-
+export const handleError = (error: AxiosError) => Promise.reject({
+  message: error?.response?.data?.errorMessages.length && error.response.data.errorMessages[0] || error.request
+});

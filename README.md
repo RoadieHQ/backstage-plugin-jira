@@ -1,6 +1,6 @@
 # Jira Plugin for Backstage
 
-![a Jira plugin for Backstage](./docs/jira-plugin.gif)
+![a Jira plugin for Backstage](https://github.com/RoadieHQ/backstage-plugin-jira/docs/jira-plugin.gif)
 
 ## Features
 
@@ -72,8 +72,8 @@ metadata:
 ```
 
 2. Get and provide `JIRA_TOKEN` as env variable in following format:
-"Basic base64(jira-mail@example.com:JIRA_TOKEN)" for example:
-```Basic: ZXhhbXBsZV9qaXJhQGV4YW1wbGUuY29tOjU1Q3NUSEoxWW1oTVdJSFptdGJXNUUxOA==```
+   "Basic base64(jira-mail@example.com:JIRA_TOKEN)" for example:
+   `Basic: ZXhhbXBsZV9qaXJhQGV4YW1wbGUuY29tOjU1Q3NUSEoxWW1oTVdJSFptdGJXNUUxOA==`
 
 ## Links
 

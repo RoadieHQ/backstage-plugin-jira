@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { JIRA_PROJECT_KEY_ANNOTATION } from '../hooks';
-
-export const isPluginApplicableToEntity = (entity: Entity) =>
-  entity?.metadata.annotations?.[JIRA_PROJECT_KEY_ANNOTATION];
-
+export { useActivityStream } from './useActivityStream';
+export { useProjectInfo } from './useProjectInfo';
+export { useStatuses } from './useStatuses';
+export { useProjectEntity, JIRA_PROJECT_KEY_ANNOTATION } from './useProjectEntity';

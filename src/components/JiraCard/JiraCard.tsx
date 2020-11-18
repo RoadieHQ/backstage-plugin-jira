@@ -25,8 +25,7 @@ import {
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard, Progress } from '@backstage/core';
-import { useProjectInfo } from '../useRequests';
-import { useProjectEntity } from '../useProjectEntity';
+import { useProjectInfo, useProjectEntity } from '../../hooks';
 import { EntityProps, ProjectDetailsProps } from '../../types';
 import { Status } from './components/Status';
 import { ActivityStream } from './components/ActivityStream';
