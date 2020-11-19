@@ -72,8 +72,7 @@ export class JiraAPI {
     `;
     const data = {
       jql,
-      maxResults: 1,
-      fields: ['issuetype'],
+      maxResults: 0,
     };
     const request = await axios.post(`${apiUrl}${REST_API}search`, data);
     const response = request.data;
