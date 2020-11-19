@@ -1,6 +1,6 @@
 # Jira Plugin for Backstage
 
-![a Jira plugin for Backstage](https://github.com/RoadieHQ/backstage-plugin-jira/docs/jira-plugin.gif)
+![a Jira plugin for Backstage](https://raw.githubusercontent.com/RoadieHQ/backstage-plugin-jira/main/docs/jira-plugin.gif)
 
 ## Features
 
