@@ -43,7 +43,7 @@ export { plugin as Jira } from '@roadiehq/backstage-plugin-jira';
 ```ts
 // packages/app/src/components/catalog/EntityPage.tsx
 import {
-  JiraCard
+  JiraCard,
   isPluginApplicableToEntity as isJiraAvailable,
 } from '@roadiehq/backstage-plugin-jira';
 
