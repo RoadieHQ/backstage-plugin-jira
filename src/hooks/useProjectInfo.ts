@@ -31,7 +31,6 @@ export const useProjectInfo = (
       setTimeout(() => (document.activeElement as HTMLElement).blur(), 0);
       return await api.getProjectDetails(projectKey, component, statusesNames);
     } catch (err) {
-      console.log(err.message);
       return handleError(err);
     }
   }, [api, projectKey, component, statusesNames]);
