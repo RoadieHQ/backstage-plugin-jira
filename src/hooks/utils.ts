@@ -16,5 +16,5 @@
 import { AxiosError } from 'axios';
 
 export const handleError = (error: AxiosError) => Promise.reject({
-  message: error?.response?.data?.errorMessages.length && error.response.data.errorMessages[0] || error.request
+  message: error?.response?.data?.errorMessages && error.response.data.errorMessages[0].toString() || error?.message || error?.request || error.toString(),
 });
