@@ -24,31 +24,37 @@ export const jiraApiRef = createApiRef<JiraAPI>({
 });
 
 const DEFAULT_PROXY_PATH = '/jira/api/';
-const REST_API = 'rest/api/3/'
+const DEFAULT_REST_API_VERSION = 3;
 
 type Options = {
   discoveryApi: DiscoveryApi;
   /**
-   * Path to use for requests via the proxy, defaults to /buildkite/api
+   * Path to use for requests via the proxy, defaults to /jira/api
    */
   proxyPath?: string;
+  apiVersion?: number;
 };
 
 export class JiraAPI {
   private readonly discoveryApi: DiscoveryApi;
   private readonly proxyPath: string;
+  private readonly apiVersion: number;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
+    this.apiVersion = options.apiVersion ?? DEFAULT_REST_API_VERSION;
   }
 
   private generateProjectUrl = (url: string) => new URL(url).origin;
 
-  private async getApiUrl() {
+  private async getUrls() {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    return `${proxyUrl}${this.proxyPath}`;
-  }
+    return {
+      apiUrl: `${proxyUrl}${this.proxyPath}/rest/api/${this.apiVersion}/`,
+      baseUrl: `${proxyUrl}${this.proxyPath}`,
+    }
+  };
 
   private convertToString = (arrayElement: Array<string>): string =>
     arrayElement
@@ -74,7 +80,7 @@ export class JiraAPI {
       jql,
       maxResults: 0,
     };
-    const request = await axios.post(`${apiUrl}${REST_API}search`, data);
+    const request = await axios.post(`${apiUrl}search`, data);
     const response = request.data;
     return {
       total: response.total,
@@ -84,8 +90,8 @@ export class JiraAPI {
   };
 
   async getProjectDetails(projectKey: string, component: string, statusesNames: Array<string>) {
-    const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}${REST_API}project/${projectKey}`);
+    const { apiUrl } = await this.getUrls();
+    const request = await axios.get(`${apiUrl}project/${projectKey}`);
     const project = request.data as Project;
 
     // Generate counters for each issue type
@@ -109,22 +115,22 @@ export class JiraAPI {
         type: project.projectTypeKey,
         url: this.generateProjectUrl(project.self),
       },
-      issues: issuesCounterByType.length ? issuesCounterByType.map(status => ({
+      issues: issuesCounterByType && issuesCounterByType.length ? issuesCounterByType.map(status => ({
         ...status,
       })) : []
     };
   }
 
   async getActivityStream(size: number) {
-    const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}activity?maxResults=${size}&os_authType=basic`);
+    const { baseUrl } = await this.getUrls();
+    const request = await axios.get(`${baseUrl}activity?maxResults=${size}&os_authType=basic`);
     const activityStream = request.data;
     return activityStream; 
   }
 
   async getStatuses() {
-    const apiUrl = await this.getApiUrl();
-    const request = await axios(`${apiUrl}${REST_API}status`);
+    const { apiUrl } = await this.getUrls();
+    const request = await axios.get(`${apiUrl}status`);
     const statuses = request.data as Array<Status>;
     const formattedStatuses = statuses.length ? [...new Set(statuses.map((status) => status.name))] : [];
     return formattedStatuses;

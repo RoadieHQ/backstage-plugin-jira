@@ -29,6 +29,9 @@ proxy:
       Content-Type: 'application/json'
       X-Atlassian-Token: 'no-check'
       User-Agent: "MY-UA-STRING"
+// For Jira Server / Data Center users you also need to set up API version
+jira:
+  apiVersion: 2
 ```
 
 3. Add plugin to the list of plugins:

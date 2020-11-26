@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  configApiRef,
   createPlugin,
   createRouteRef,
   createApiFactory,
@@ -31,8 +32,13 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: jiraApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new JiraAPI({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
+      factory: ({ discoveryApi, configApi }) => {
+        return new JiraAPI({
+          discoveryApi,
+          apiVersion: configApi.getOptionalNumber('jira.apiVersion'),
+        });
+      }
     }),
   ],
 });
