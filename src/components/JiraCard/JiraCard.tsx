@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, FC } from 'react';
+import React, { useState } from 'react';
 import { 
   Avatar,
   Box,
@@ -53,7 +53,7 @@ const CardProjectDetails = ({ project }: { project: ProjectDetailsProps }) => (
   </Box>
 );
 
-export const JiraCard: FC<EntityProps> = ({ entity }) => {
+export const JiraCard = ({ entity }: EntityProps) => {
   const classes = useStyles();
   const { projectKey, component } = useProjectEntity(entity);
   const [statusesNames, setStatusesNames] = useState<Array<string>>([]);
@@ -88,6 +88,7 @@ export const JiraCard: FC<EntityProps> = ({ entity }) => {
             )) }
           </Grid>
           <Selectors
+            projectKey={projectKey}
             statusesNames={statusesNames}
             setStatusesNames={setStatusesNames}
             fetchProjectInfo={fetchProjectInfo}

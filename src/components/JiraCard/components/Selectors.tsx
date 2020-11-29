@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { 
   Box,
   Checkbox,
@@ -52,13 +52,14 @@ const MenuProps = {
   },
 };
 
-export const Selectors: FC<SelectorsProps> = ({
+export const Selectors = ({
+  projectKey,
   statusesNames,
   setStatusesNames,
   fetchProjectInfo,
-}) => {
+} : SelectorsProps ) => {
   const classes = useStyles();
-  const { statuses, statusesLoading, statusesError } = useStatuses();
+  const { statuses, statusesLoading, statusesError } = useStatuses(projectKey);
 
   const handleStatusesChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setStatusesNames(event.target.value as string[]);

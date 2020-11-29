@@ -128,9 +128,9 @@ export class JiraAPI {
     return activityStream; 
   }
 
-  async getStatuses() {
+  async getStatuses(projectKey: string) {
     const { apiUrl } = await this.getUrls();
-    const request = await axios.get(`${apiUrl}status`);
+    const request = await axios.get(`${apiUrl}project/${projectKey}/statuses`);
     const statuses = request.data as Array<Status>;
     const formattedStatuses = statuses.length ? [...new Set(statuses.map((status) => status.name))] : [];
     return formattedStatuses;
