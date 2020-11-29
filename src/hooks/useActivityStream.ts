@@ -68,7 +68,7 @@ export const useActivityStream = (size: number) => {
   }, [size, fetchActivityStream]);
 
   return {
-    activitesLoading: state.loading,
+    activitiesLoading: state.loading,
     activities: state.value,
     activitiesError: state.error,
   };

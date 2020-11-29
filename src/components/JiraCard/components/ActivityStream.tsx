@@ -92,7 +92,7 @@ export const ActivityStream = () => {
   const classes = useStyles();
   const [size, setSize] = useState(25);
   const [disableButton, setDisableButton] = useState(false);
-  const { activities, activitesLoading, activitiesError } = useActivityStream(size);
+  const { activities, activitiesLoading, activitiesError } = useActivityStream(size);
 
   const showMore = useCallback(() => {
     setSize(size + 10);
@@ -108,7 +108,7 @@ export const ActivityStream = () => {
     <>
       <Typography variant="subtitle1">Activity stream</Typography>
       <Paper className={classes.paper}>
-      { activitesLoading ? <Progress /> : null }
+      { activitiesLoading ? <Progress /> : null }
       { activities ? (
         <>
         {activities.map(entry => (
@@ -135,7 +135,7 @@ export const ActivityStream = () => {
               'No more activities'
           ) : (
             <Link onClick={showMore} className={classes.link}>
-              {activitesLoading ? 'Loading..' : 'Show more..'}
+              {activitiesLoading ? 'Loading..' : 'Show more..'}
           </Link>
           )}
         </Box>
