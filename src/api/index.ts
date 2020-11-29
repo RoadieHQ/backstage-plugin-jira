@@ -74,7 +74,7 @@ export class JiraAPI {
       project = "${projectKey}"
       AND issuetype = "${issueType}"
       ${statusesString ? `AND status in (${statusesString})` : ''}
-      ${component ? `AND component = ${component}` : ''}
+      ${component ? `AND component = "${component}"` : ''}
     `;
     const data = {
       jql,
