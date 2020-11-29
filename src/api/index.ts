@@ -111,7 +111,7 @@ export class JiraAPI {
     return {
       project: {
         name: project.name,
-        iconUrl: project.avatarUrls['16x16'],
+        iconUrl: project.avatarUrls['48x48'],
         type: project.projectTypeKey,
         url: this.generateProjectUrl(project.self),
       },
