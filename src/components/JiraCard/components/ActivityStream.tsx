@@ -88,11 +88,11 @@ const options = {
   }
 };
 
-export const ActivityStream = () => {
+export const ActivityStream = ({projectKey}: {projectKey: string}) => {
   const classes = useStyles();
   const [size, setSize] = useState(25);
   const [disableButton, setDisableButton] = useState(false);
-  const { activities, activitiesLoading, activitiesError } = useActivityStream(size);
+  const { activities, activitiesLoading, activitiesError } = useActivityStream(size, projectKey);
 
   const showMore = useCallback(() => {
     setSize(size + 10);

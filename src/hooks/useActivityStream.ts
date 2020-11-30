@@ -30,12 +30,12 @@ const decodeHtml = (html: string) => {
   return txt.value;
 };
 
-export const useActivityStream = (size: number) => {
+export const useActivityStream = (size: number, projectKey: string) => {
   const api = useApi(jiraApiRef);
 
   const getActivityStream = useCallback(async () => {
     try {
-      const response = await api.getActivityStream(size);
+      const response = await api.getActivityStream(size, projectKey);
       const parsedData = JSON.parse(convert.xml2json(response, {compact: true, spaces: 2}));
       const mappedData = parsedData.feed.entry.map((entry: ActivityStreamEntry): ActivityStreamElement => {
         const time = getPropertyValue(entry, 'updated');
@@ -59,7 +59,7 @@ export const useActivityStream = (size: number) => {
     } catch (err) {
       return handleError(err);
     }
-  }, [api, size]);
+  }, [api, size, projectKey]);
   
   const [state, fetchActivityStream] = useAsyncFn(() => getActivityStream(), [size]);
 

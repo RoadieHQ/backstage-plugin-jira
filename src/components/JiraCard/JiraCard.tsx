@@ -92,7 +92,7 @@ export const JiraCard: FC<EntityProps> = ({ entity }) => {
             setStatusesNames={setStatusesNames}
             fetchProjectInfo={fetchProjectInfo}
           />
-          <ActivityStream />
+          <ActivityStream projectKey={projectKey} />
         </div>
       ) : null }
     </InfoCard>
