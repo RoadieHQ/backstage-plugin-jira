@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { 
+import {
   Box,
   Checkbox,
   Divider,
@@ -57,21 +57,28 @@ export const Selectors = ({
   statusesNames,
   setStatusesNames,
   fetchProjectInfo,
-} : SelectorsProps ) => {
+}: SelectorsProps) => {
   const classes = useStyles();
   const { statuses, statusesLoading, statusesError } = useStatuses(projectKey);
 
-  const handleStatusesChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleStatusesChange = (
+    event: React.ChangeEvent<{ value: unknown }>,
+  ) => {
     setStatusesNames(event.target.value as string[]);
   };
 
   // Show selector only when needed
-  return !statusesLoading && !statusesError && statuses && statuses.length >= 2 ? (
+  return !statusesLoading &&
+    !statusesError &&
+    statuses &&
+    statuses.length >= 2 ? (
     <Box py={2}>
       <Divider />
       <Box display="flex" justifyContent="flex-end" py={2}>
         <FormControl className={classes.formControl}>
-          <InputLabel id="select-multiple-projects-statuses">Statuses</InputLabel>
+          <InputLabel id="select-multiple-projects-statuses">
+            Statuses
+          </InputLabel>
           <Select
             labelId="select-statuses-label"
             id="select-statuses"
@@ -79,11 +86,13 @@ export const Selectors = ({
             value={statusesNames}
             onChange={handleStatusesChange}
             input={<Input />}
-            renderValue={(selected) => (selected as Array<string>).filter(Boolean).join(', ')}
+            renderValue={selected =>
+              (selected as Array<string>).filter(Boolean).join(', ')
+            }
             MenuProps={MenuProps}
             onClose={fetchProjectInfo}
           >
-            {statuses.map((status) => (
+            {statuses.map(status => (
               <MenuItem key={status} value={status}>
                 <Checkbox checked={statusesNames.indexOf(status) > -1} />
                 <ListItemText primary={status} />

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Box, Typography, makeStyles, createStyles, } from '@material-ui/core';
+import { Box, Typography, makeStyles, createStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -24,7 +24,13 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export const Status = ({name, iconUrl} : {name: string, iconUrl: string}) => {
+export const Status = ({
+  name,
+  iconUrl,
+}: {
+  name: string;
+  iconUrl: string;
+}) => {
   const classes = useStyles();
   return (
     <Box display="flex" alignItems="center" justifyContent="center" mb={1}>

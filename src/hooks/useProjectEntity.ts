@@ -20,7 +20,11 @@ const JIRA_COMPONENT_ANNOTATION = 'jira/component';
 
 export const useProjectEntity = (entity: Entity) => {
   return {
-    projectKey: entity.metadata?.annotations?.[JIRA_PROJECT_KEY_ANNOTATION] as string,
-    component: entity.metadata?.annotations?.[JIRA_COMPONENT_ANNOTATION] as string,
+    projectKey: entity.metadata?.annotations?.[
+      JIRA_PROJECT_KEY_ANNOTATION
+    ] as string,
+    component: entity.metadata?.annotations?.[
+      JIRA_COMPONENT_ANNOTATION
+    ] as string,
   };
 };

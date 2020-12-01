@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 import React, { useState, useCallback } from 'react';
-import { Box, Divider, Link, Paper, Typography, Tooltip, makeStyles, createStyles, Theme, } from '@material-ui/core';
+import {
+  Box,
+  Divider,
+  Link,
+  Paper,
+  Typography,
+  Tooltip,
+  makeStyles,
+  createStyles,
+  Theme,
+} from '@material-ui/core';
 import { Progress } from '@backstage/core';
-import parse, { domToReact, attributesToProps, DomElement } from 'html-react-parser';
+import parse, {
+  domToReact,
+  attributesToProps,
+  DomElement,
+} from 'html-react-parser';
 import { useActivityStream } from '../../../hooks';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -36,13 +50,13 @@ const useStyles = makeStyles((theme: Theme) =>
         margin: theme.spacing(1, 0),
       },
       '& blockquote': {
-        background: theme.palette.type === 'dark' ? '#424242' : "#e0f0ff",
-        borderLeft: "1px solid #c2d9ef",
+        background: theme.palette.type === 'dark' ? '#424242' : '#e0f0ff',
+        borderLeft: '1px solid #c2d9ef',
         color: theme.palette.text.primary,
-        fontStyle: "normal",
+        fontStyle: 'normal',
         margin: theme.spacing(1, 0),
-        overflowX: "auto",
-        overflowY: "hidden",
+        overflowX: 'auto',
+        overflowY: 'hidden',
         padding: theme.spacing(0, 1),
       },
       '& > :last-child > hr': {
@@ -58,13 +72,15 @@ const useStyles = makeStyles((theme: Theme) =>
         borderRadius: '5px',
       },
       '&::-webkit-scrollbar-thumb': {
-        border: `1px solid ${theme.palette.type === 'dark' ? '#555' : '#F5F5F5'}`,
-        backgroundColor: theme.palette.type === 'dark' ? '#F5F5F5': '#555',
+        border: `1px solid ${
+          theme.palette.type === 'dark' ? '#555' : '#F5F5F5'
+        }`,
+        backgroundColor: theme.palette.type === 'dark' ? '#F5F5F5' : '#555',
         borderRadius: '4px',
       },
       '& span': {
         fontSize: '0.7rem',
-      }
+      },
     },
     time: {
       lineHeight: 0,
@@ -79,69 +95,77 @@ const useStyles = makeStyles((theme: Theme) =>
 const options = {
   replace: (node: DomElement) => {
     if (!node) return null;
- 
-    if (node.name === 'a') { // Add target blank to all urls
-      const props = attributesToProps(node.attribs as {[key: string]: string});
-      return <a {...props} target="_blank" rel="noopener noreferrer">{node.children && domToReact(node.children)}</a>;
+
+    if (node.name === 'a') {
+      // Add target blank to all urls
+      const props = attributesToProps(
+        node.attribs as { [key: string]: string },
+      );
+      return (
+        <a {...props} target="_blank" rel="noopener noreferrer">
+          {node.children && domToReact(node.children)}
+        </a>
+      );
     }
     return null;
-  }
+  },
 };
 
 export const ActivityStream = () => {
   const classes = useStyles();
   const [size, setSize] = useState(25);
   const [disableButton, setDisableButton] = useState(false);
-  const { activities, activitiesLoading, activitiesError } = useActivityStream(size);
+  const { activities, activitiesLoading, activitiesError } = useActivityStream(
+    size,
+  );
 
   const showMore = useCallback(() => {
     setSize(size + 10);
-    if(activities && activities.length < size) {
+    if (activities && activities.length < size) {
       setDisableButton(true);
     }
   }, [size, activities]);
 
-
-  if(activitiesError) return null; // Hide activity stream on error
+  if (activitiesError) return null; // Hide activity stream on error
 
   return (
     <>
       <Typography variant="subtitle1">Activity stream</Typography>
       <Paper className={classes.paper}>
-      { activitiesLoading ? <Progress /> : null }
-      { activities ? (
-        <>
-        {activities.map(entry => (
-          <Box key={entry.id}>
-            {parse(entry.title, options)} 
-            <Box>
-              {parse((entry.summary || entry.content || ''), options)}
+        {activitiesLoading ? <Progress /> : null}
+        {activities ? (
+          <>
+            {activities.map(entry => (
+              <Box key={entry.id}>
+                {parse(entry.title, options)}
+                <Box>
+                  {parse(entry.summary || entry.content || '', options)}
+                </Box>
+                <Box display="flex" alignItems="center" mt={1}>
+                  <Tooltip title={entry.icon.title}>
+                    <img src={entry.icon.url} alt={entry.icon.title} />
+                  </Tooltip>
+                  <Tooltip title={entry.time.value}>
+                    <Typography variant="caption" className={classes.time}>
+                      {entry.time.elapsed}
+                    </Typography>
+                  </Tooltip>
+                </Box>
+                <Divider />
+              </Box>
+            ))}
+            <Box display="flex" justifyContent="center" pt={1}>
+              {disableButton ? (
+                'No more activities'
+              ) : (
+                <Link onClick={showMore} className={classes.link}>
+                  {activitiesLoading ? 'Loading..' : 'Show more..'}
+                </Link>
+              )}
             </Box>
-            <Box display="flex" alignItems="center" mt={1}>
-              <Tooltip title={entry.icon.title}>
-                <img src={entry.icon.url} alt={entry.icon.title} />
-              </Tooltip>
-              <Tooltip title={entry.time.value}>
-                <Typography variant="caption" className={classes.time}>
-                    {entry.time.elapsed}
-                </Typography>
-              </Tooltip>
-            </Box>
-            <Divider />
-          </Box>
-        ))}
-        <Box display="flex" justifyContent="center" pt={1}>
-          {disableButton ? (
-              'No more activities'
-          ) : (
-            <Link onClick={showMore} className={classes.link}>
-              {activitiesLoading ? 'Loading..' : 'Show more..'}
-          </Link>
-          )}
-        </Box>
-        </>
-      ) : null }
+          </>
+        ) : null}
       </Paper>
     </>
   );
-}
+};

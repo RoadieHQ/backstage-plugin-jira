@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { 
+import {
   Avatar,
   Box,
   Grid,
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
       '& + .MuiAlert-root': {
         marginTop: theme.spacing(3),
       },
-    },  
+    },
     root: {
       flexGrow: 1,
       fontSize: '0.75rem',
@@ -49,7 +49,10 @@ const useStyles = makeStyles((theme: Theme) =>
 const CardProjectDetails = ({ project }: { project: ProjectDetailsProps }) => (
   <Box display="flex" alignItems="center">
     <Avatar alt="" src={project.iconUrl} />
-    <Box component="span" ml={1}> {project.name} | {project.type}</Box>
+    <Box component="span" ml={1}>
+      {' '}
+      {project.name} | {project.type}
+    </Box>
   </Box>
 );
 
@@ -57,35 +60,51 @@ export const JiraCard = ({ entity }: EntityProps) => {
   const classes = useStyles();
   const { projectKey, component } = useProjectEntity(entity);
   const [statusesNames, setStatusesNames] = useState<Array<string>>([]);
-  const { project, issues, projectLoading, projectError, fetchProjectInfo } = useProjectInfo(projectKey, component, statusesNames);
+  const {
+    project,
+    issues,
+    projectLoading,
+    projectError,
+    fetchProjectInfo,
+  } = useProjectInfo(projectKey, component, statusesNames);
 
   return (
     <InfoCard
       title="Jira"
-      subheader= { project && <CardProjectDetails project={ project }/> }
+      subheader={project && <CardProjectDetails project={project} />}
       className={classes.infoCard}
       deepLink={{
         link: `${project?.url}/browse/${projectKey}`,
         title: 'Go to project',
-        onClick: (e) => {
+        onClick: e => {
           e.preventDefault();
           window.open(`${project?.url}/browse/${projectKey}`);
-        }
+        },
       }}
     >
-      { projectLoading && !(project && issues) ? <Progress /> : null }
-      { projectError ? <Alert severity="error" className={classes.infoCard}>{projectError.message}</Alert> : null }
-      { project && issues ? (
+      {projectLoading && !(project && issues) ? <Progress /> : null}
+      {projectError ? (
+        <Alert severity="error" className={classes.infoCard}>
+          {projectError.message}
+        </Alert>
+      ) : null}
+      {project && issues ? (
         <div className={classes.root}>
           <Grid container spacing={3}>
-            { issues.map(issueType => (
+            {issues.map(issueType => (
               <Grid item xs key={issueType.name}>
-                <Box width={ 100 } display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                <Box
+                  width={100}
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                >
                   <Status name={issueType.name} iconUrl={issueType.iconUrl} />
                   <Typography variant="h4">{issueType.total}</Typography>
                 </Box>
               </Grid>
-            )) }
+            ))}
           </Grid>
           <Selectors
             projectKey={projectKey}
@@ -95,7 +114,7 @@ export const JiraCard = ({ entity }: EntityProps) => {
           />
           <ActivityStream />
         </div>
-      ) : null }
+      ) : null}
     </InfoCard>
   );
 };

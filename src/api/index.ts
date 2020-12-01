@@ -53,13 +53,14 @@ export class JiraAPI {
     return {
       apiUrl: `${proxyUrl}${this.proxyPath}/rest/api/${this.apiVersion}/`,
       baseUrl: `${proxyUrl}${this.proxyPath}`,
-    }
-  };
+    };
+  }
 
   private convertToString = (arrayElement: Array<string>): string =>
     arrayElement
-    .filter(Boolean)
-    .map(i => `'${i}'`).join(',');
+      .filter(Boolean)
+      .map(i => `'${i}'`)
+      .join(',');
 
   private async getIssuesCountByType(
     apiUrl: string,
@@ -67,7 +68,7 @@ export class JiraAPI {
     component: string,
     statusesNames: Array<string>,
     issueType: string,
-    issueIcon: string
+    issueIcon: string,
   ) {
     const statusesString = this.convertToString(statusesNames);
     const jql = `
@@ -87,9 +88,13 @@ export class JiraAPI {
       name: issueType,
       iconUrl: issueIcon,
     } as IssuesCounter;
-  };
+  }
 
-  async getProjectDetails(projectKey: string, component: string, statusesNames: Array<string>) {
+  async getProjectDetails(
+    projectKey: string,
+    component: string,
+    statusesNames: Array<string>,
+  ) {
     const { apiUrl } = await this.getUrls();
     const request = await axios.get(`${apiUrl}project/${projectKey}`);
     const project = request.data as Project;
@@ -99,15 +104,22 @@ export class JiraAPI {
       name: status.name,
       iconUrl: status.iconUrl,
     }));
-  
+
     const issuesCounterByType = await Promise.all(
       issuesTypes.map(issue => {
         const issueType = issue.name;
         const issueIcon = issue.iconUrl;
-        return this.getIssuesCountByType(apiUrl, projectKey, component, statusesNames, issueType, issueIcon)
-      })
+        return this.getIssuesCountByType(
+          apiUrl,
+          projectKey,
+          component,
+          statusesNames,
+          issueType,
+          issueIcon,
+        );
+      }),
     );
-  
+
     return {
       project: {
         name: project.name,
@@ -115,24 +127,35 @@ export class JiraAPI {
         type: project.projectTypeKey,
         url: this.generateProjectUrl(project.self),
       },
-      issues: issuesCounterByType && issuesCounterByType.length ? issuesCounterByType.map(status => ({
-        ...status,
-      })) : []
+      issues:
+        issuesCounterByType && issuesCounterByType.length
+          ? issuesCounterByType.map(status => ({
+              ...status,
+            }))
+          : [],
     };
   }
 
   async getActivityStream(size: number) {
     const { baseUrl } = await this.getUrls();
-    const request = await axios.get(`${baseUrl}activity?maxResults=${size}&os_authType=basic`);
+    const request = await axios.get(
+      `${baseUrl}activity?maxResults=${size}&os_authType=basic`,
+    );
     const activityStream = request.data;
-    return activityStream; 
+    return activityStream;
   }
 
   async getStatuses(projectKey: string) {
     const { apiUrl } = await this.getUrls();
     const request = await axios.get(`${apiUrl}project/${projectKey}/statuses`);
     const statuses = request.data as Array<Status>;
-    const formattedStatuses = statuses.length ? [...new Set(statuses.map((status) => status.name))] : [];
+    const formattedStatuses = [
+      ...new Set(
+        statuses
+          .map(status => status.statuses.map(s => s.name))
+          .reduce((acc, val) => acc.concat(val), []),
+      ),
+    ];
     return formattedStatuses;
   }
 }

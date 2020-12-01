@@ -15,14 +15,14 @@
  */
 import { useEffect, useCallback } from 'react';
 import { useApi } from '@backstage/core';
-import { useAsyncFn} from 'react-use';
+import { useAsyncFn } from 'react-use';
 import { handleError } from './utils';
 import { jiraApiRef } from '../api';
 
 export const useProjectInfo = (
   projectKey: string,
   component: string,
-  statusesNames: Array<string>
+  statusesNames: Array<string>,
 ) => {
   const api = useApi(jiraApiRef);
 
@@ -34,13 +34,15 @@ export const useProjectInfo = (
       return handleError(err);
     }
   }, [api, projectKey, component, statusesNames]);
-  
-  const [state, fetchProjectInfo] = useAsyncFn(() => getProjectDetails(), [statusesNames]);
+
+  const [state, fetchProjectInfo] = useAsyncFn(() => getProjectDetails(), [
+    statusesNames,
+  ]);
 
   useEffect(() => {
     fetchProjectInfo();
   }, [statusesNames, fetchProjectInfo]);
-  
+
   return {
     projectLoading: state.loading,
     project: state?.value?.project,

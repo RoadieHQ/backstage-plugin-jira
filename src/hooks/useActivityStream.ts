@@ -17,15 +17,22 @@ import { useEffect, useCallback } from 'react';
 import convert from 'xml-js';
 import moment from 'moment';
 import { useApi } from '@backstage/core';
-import { useAsyncFn} from 'react-use';
+import { useAsyncFn } from 'react-use';
 import { handleError } from './utils';
-import { ActivityStreamEntry, ActivityStreamElement, ActivityStreamKeys } from '../types';
+import {
+  ActivityStreamEntry,
+  ActivityStreamElement,
+  ActivityStreamKeys,
+} from '../types';
 import { jiraApiRef } from '../api';
 
-const getPropertyValue = (entry: ActivityStreamEntry, property: ActivityStreamKeys): string => entry[property]?._text;
+const getPropertyValue = (
+  entry: ActivityStreamEntry,
+  property: ActivityStreamKeys,
+): string => entry[property]?._text;
 const getElapsedTime = (start: string) => moment(start).fromNow();
 const decodeHtml = (html: string) => {
-  const txt = document.createElement("textarea");
+  const txt = document.createElement('textarea');
   txt.innerHTML = html;
   return txt.value;
 };
@@ -36,32 +43,43 @@ export const useActivityStream = (size: number) => {
   const getActivityStream = useCallback(async () => {
     try {
       const response = await api.getActivityStream(size);
-      const parsedData = JSON.parse(convert.xml2json(response, {compact: true, spaces: 2}));
-      const mappedData = parsedData.feed.entry.map((entry: ActivityStreamEntry): ActivityStreamElement => {
-        const time = getPropertyValue(entry, 'updated');
-        const icon = entry.link[1]._attributes;
-        return {
-          id: getPropertyValue(entry, 'id'),
-          time: {
-            elapsed: getElapsedTime(time),
-            value: new Date(time).toLocaleTimeString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
-          },
-          title: decodeHtml(getPropertyValue(entry, 'title')),
-          icon: {
-            url: icon.href,
-            title: icon.title,
-          },
-          summary: decodeHtml(getPropertyValue(entry, 'summary') || ''),
-          content: decodeHtml(getPropertyValue(entry, 'content') || ''),
-        }
-      });
+      const parsedData = JSON.parse(
+        convert.xml2json(response, { compact: true, spaces: 2 }),
+      );
+      const mappedData = parsedData.feed.entry.map(
+        (entry: ActivityStreamEntry): ActivityStreamElement => {
+          const time = getPropertyValue(entry, 'updated');
+          const icon = entry.link[1]._attributes;
+          return {
+            id: getPropertyValue(entry, 'id'),
+            time: {
+              elapsed: getElapsedTime(time),
+              value: new Date(time).toLocaleTimeString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }),
+            },
+            title: decodeHtml(getPropertyValue(entry, 'title')),
+            icon: {
+              url: icon.href,
+              title: icon.title,
+            },
+            summary: decodeHtml(getPropertyValue(entry, 'summary') || ''),
+            content: decodeHtml(getPropertyValue(entry, 'content') || ''),
+          };
+        },
+      );
       return mappedData as Array<ActivityStreamElement>;
     } catch (err) {
       return handleError(err);
     }
   }, [api, size]);
-  
-  const [state, fetchActivityStream] = useAsyncFn(() => getActivityStream(), [size]);
+
+  const [state, fetchActivityStream] = useAsyncFn(() => getActivityStream(), [
+    size,
+  ]);
 
   useEffect(() => {
     fetchActivityStream();

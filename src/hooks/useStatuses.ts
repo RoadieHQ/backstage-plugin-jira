@@ -29,8 +29,8 @@ export const useStatuses = (projectKey: string) => {
       return handleError(err);
     }
   }, [api, projectKey]);
-  
-  const {loading, value, error} = useAsync(() => getStatuses(), []);
+
+  const { loading, value, error } = useAsync(() => getStatuses(), []);
   return {
     statusesLoading: loading,
     statuses: value,

@@ -51,7 +51,6 @@ import {
 } from '@roadiehq/backstage-plugin-jira';
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
-
   <Grid container spacing={3} alignItems="stretch">
     ...
     {isJiraAvailable(entity) && (
