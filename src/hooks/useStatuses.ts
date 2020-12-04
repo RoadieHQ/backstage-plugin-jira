@@ -19,18 +19,18 @@ import { useAsync } from 'react-use';
 import { handleError } from './utils';
 import { jiraApiRef } from '../api';
 
-export const useStatuses = () => {
+export const useStatuses = (projectKey: string) => {
   const api = useApi(jiraApiRef);
 
   const getStatuses = useCallback(async () => {
     try {
-      return await api.getStatuses();
+      return await api.getStatuses(projectKey);
     } catch (err) {
       return handleError(err);
     }
-  }, [api]);
-  
-  const {loading, value, error} = useAsync(() => getStatuses(), []);
+  }, [api, projectKey]);
+
+  const { loading, value, error } = useAsync(() => getStatuses(), []);
   return {
     statusesLoading: loading,
     statuses: value,

@@ -26,6 +26,7 @@ export type EntityProps = {
 };
 
 export type SelectorsProps = {
+  projectKey: string;
   statusesNames: Array<string>;
   setStatusesNames: Dispatch<SetStateAction<Array<string>>>;
   fetchProjectInfo: () => Promise<any>;
@@ -106,5 +107,5 @@ export type ProjectDetailsProps = {
 };
 
 export type Status = {
-  name: string;
+  statuses: Array<{ name: string }>;
 };

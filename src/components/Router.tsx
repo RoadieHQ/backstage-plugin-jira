@@ -19,4 +19,3 @@ import { JIRA_PROJECT_KEY_ANNOTATION } from '../hooks';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   entity?.metadata.annotations?.[JIRA_PROJECT_KEY_ANNOTATION];
-

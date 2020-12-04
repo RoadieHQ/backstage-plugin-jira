@@ -38,7 +38,7 @@ export const plugin = createPlugin({
           discoveryApi,
           apiVersion: configApi.getOptionalNumber('jira.apiVersion'),
         });
-      }
+      },
     }),
   ],
 });
