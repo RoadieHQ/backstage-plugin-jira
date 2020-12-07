@@ -24,7 +24,7 @@ export const jiraApiRef = createApiRef<JiraAPI>({
 });
 
 const DEFAULT_PROXY_PATH = '/jira/api';
-const DEFAULT_REST_API_VERSION = 3;
+const DEFAULT_REST_API_VERSION = 'latest';
 
 type Options = {
   discoveryApi: DiscoveryApi;
