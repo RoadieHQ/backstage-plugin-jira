@@ -26,6 +26,7 @@ import {
   Menu,
   MenuItem,
   Checkbox,
+  Divider,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard, Progress } from '@backstage/core';
@@ -48,6 +49,9 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       flexGrow: 1,
       fontSize: '0.75rem',
+      '& > * + *': {
+        marginTop: theme.spacing(1),
+      },
     },
     actions: {
       // It's a workaroung for strange styles set in @backstage/core InfoCard component
@@ -56,12 +60,18 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const CardProjectDetails = ({ project }: { project: ProjectDetailsProps }) => (
+const CardProjectDetails = ({
+  project,
+  component,
+}: {
+  project: ProjectDetailsProps;
+  component: string;
+}) => (
   <Box display="flex" alignItems="center">
     <Avatar alt="" src={project.iconUrl} />
-    <Box component="span" ml={1}>
-      {' '}
+    <Box ml={1}>
       {project.name} | {project.type}
+      {component ? <Box>component: {component}</Box> : null}
     </Box>
   </Box>
 );
@@ -94,7 +104,13 @@ export const JiraCard = ({ entity }: EntityProps) => {
 
   return (
     <InfoCard
+      className={classes.infoCard}
       title="Jira"
+      subheader={
+        project && (
+          <CardProjectDetails project={project} component={component} />
+        )
+      }
       actionsTopRight={
         <>
           <IconButton
@@ -120,8 +136,6 @@ export const JiraCard = ({ entity }: EntityProps) => {
           </Menu>
         </>
       }
-      subheader={project && <CardProjectDetails project={project} />}
-      className={classes.infoCard}
       deepLink={{
         link: `${project?.url}/browse/${projectKey}`,
         title: 'Go to project',
@@ -139,6 +153,12 @@ export const JiraCard = ({ entity }: EntityProps) => {
       ) : null}
       {project && issues ? (
         <div className={classes.root}>
+          <Selectors
+            projectKey={projectKey}
+            statusesNames={statusesNames}
+            setStatusesNames={setStatusesNames}
+            fetchProjectInfo={fetchProjectInfo}
+          />
           <Grid container spacing={3}>
             {displayIssues?.map(issueType => (
               <Grid item xs key={issueType.name}>
@@ -155,12 +175,7 @@ export const JiraCard = ({ entity }: EntityProps) => {
               </Grid>
             ))}
           </Grid>
-          <Selectors
-            projectKey={projectKey}
-            statusesNames={statusesNames}
-            setStatusesNames={setStatusesNames}
-            fetchProjectInfo={fetchProjectInfo}
-          />
+          <Divider />
           <ActivityStream projectKey={projectKey} />
         </div>
       ) : null}
