@@ -22,6 +22,10 @@ import {
   Typography,
   createStyles,
   makeStyles,
+  IconButton,
+  Menu,
+  MenuItem,
+  Checkbox,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard, Progress } from '@backstage/core';
@@ -30,6 +34,8 @@ import { EntityProps, ProjectDetailsProps } from '../../types';
 import { Status } from './components/Status';
 import { ActivityStream } from './components/ActivityStream';
 import { Selectors } from './components/Selectors';
+import { useEmptyIssueTypeFilter } from '../../hooks/useEmptyIssueTypeFilter';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,6 +48,10 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       flexGrow: 1,
       fontSize: '0.75rem',
+    },
+    actions: {
+      // It's a workaroung for strange styles set in @backstage/core InfoCard component
+      margin: theme.spacing(-8, -8, 0, 0),
     },
   }),
 );
@@ -67,10 +77,49 @@ export const JiraCard = ({ entity }: EntityProps) => {
     projectError,
     fetchProjectInfo,
   } = useProjectInfo(projectKey, component, statusesNames);
+  const {
+    issueTypes: displayIssues,
+    type,
+    changeType,
+  } = useEmptyIssueTypeFilter(issues);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <InfoCard
       title="Jira"
+      actionsTopRight={
+        <>
+          <IconButton
+            className={classes.actions}
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-haspopup="true"
+            onClick={handleClick}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={changeType}>
+              <Checkbox checked={type === 'all'} />
+              <>Show non-empty issue types</>
+            </MenuItem>
+          </Menu>
+        </>
+      }
       subheader={project && <CardProjectDetails project={project} />}
       className={classes.infoCard}
       deepLink={{
@@ -91,7 +140,7 @@ export const JiraCard = ({ entity }: EntityProps) => {
       {project && issues ? (
         <div className={classes.root}>
           <Grid container spacing={3}>
-            {issues.map(issueType => (
+            {displayIssues?.map(issueType => (
               <Grid item xs key={issueType.name}>
                 <Box
                   width={100}

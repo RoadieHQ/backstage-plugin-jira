@@ -21,7 +21,7 @@ yarn add @roadiehq/backstage-plugin-jira
 // app-config.yaml
 proxy:
   '/jira/api':
-    target: [JIRA_URL]
+    target: <JIRA_URL>
     headers:
       Authorization:
         $env: JIRA_TOKEN
@@ -69,13 +69,13 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
 ```yaml
 metadata:
   annotations:
-    jira/project-key: [example-jira-project-key]
-    jira/component: [example-component] // optional, you might skip value to fetch data for all components
+    jira/project-key: <example-jira-project-key>
+    jira/component: <example-component> # optional, you might skip value to fetch data for all components
 ```
 
 2. Get and provide `JIRA_TOKEN` as env variable in following format:
    "Basic base64(jira-mail@example.com:JIRA_TOKEN)" for example:
-   `Basic: ZXhhbXBsZV9qaXJhQGV4YW1wbGUuY29tOjU1Q3NUSEoxWW1oTVdJSFptdGJXNUUxOA==`
+   `Basic ZXhhbXBsZV9qaXJhQGV4YW1wbGUuY29tOjU1Q3NUSEoxWW1oTVdJSFptdGJXNUUxOA==`
 
 ## Links
 
