@@ -17,26 +17,22 @@ import React from 'react';
 import {
   Box,
   Checkbox,
-  Divider,
   FormControl,
   Input,
   InputLabel,
   ListItemText,
   MenuItem,
   Select,
-  Theme,
   createStyles,
   makeStyles,
 } from '@material-ui/core';
 import { useStatuses } from '../../../hooks';
 import { SelectorsProps } from '../../../types';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-      maxWidth: 300,
+      minWidth: 150,
     },
   }),
 );
@@ -72,35 +68,32 @@ export const Selectors = ({
     !statusesError &&
     statuses &&
     statuses.length >= 2 ? (
-    <Box py={2}>
-      <Divider />
-      <Box display="flex" justifyContent="flex-end" py={2}>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="select-multiple-projects-statuses">
-            Statuses
-          </InputLabel>
-          <Select
-            labelId="select-statuses-label"
-            id="select-statuses"
-            multiple
-            value={statusesNames}
-            onChange={handleStatusesChange}
-            input={<Input />}
-            renderValue={selected =>
-              (selected as Array<string>).filter(Boolean).join(', ')
-            }
-            MenuProps={MenuProps}
-            onClose={fetchProjectInfo}
-          >
-            {statuses.map(status => (
-              <MenuItem key={status} value={status}>
-                <Checkbox checked={statusesNames.indexOf(status) > -1} />
-                <ListItemText primary={status} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
+    <Box display="flex" justifyContent="flex-end">
+      <FormControl className={classes.formControl}>
+        <InputLabel id="select-multiple-projects-statuses">
+          filter issue status
+        </InputLabel>
+        <Select
+          labelId="select-statuses-label"
+          id="select-statuses"
+          multiple
+          value={statusesNames}
+          onChange={handleStatusesChange}
+          input={<Input />}
+          renderValue={selected =>
+            (selected as Array<string>).filter(Boolean).join(', ')
+          }
+          MenuProps={MenuProps}
+          onClose={fetchProjectInfo}
+        >
+          {statuses.map(status => (
+            <MenuItem key={status} value={status}>
+              <Checkbox checked={statusesNames.indexOf(status) > -1} />
+              <ListItemText primary={status} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     </Box>
   ) : null;
 };
