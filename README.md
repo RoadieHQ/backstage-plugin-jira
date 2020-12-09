@@ -29,9 +29,6 @@ proxy:
       Content-Type: 'application/json'
       X-Atlassian-Token: 'no-check'
       User-Agent: "MY-UA-STRING"
-// For Jira Server / Data Center users you also need to set up API version
-jira:
-  apiVersion: 2
 ```
 
 3. Add plugin to the list of plugins:
@@ -41,7 +38,7 @@ jira:
 export { plugin as Jira } from '@roadiehq/backstage-plugin-jira';
 ```
 
-4. Add plugin API to your Backstage instance:
+4. Add plugin component to your Backstage instance:
 
 ```ts
 // packages/app/src/components/catalog/EntityPage.tsx
@@ -73,9 +70,10 @@ metadata:
     jira/component: <example-component> # optional, you might skip value to fetch data for all components
 ```
 
-2. Get and provide `JIRA_TOKEN` as env variable in following format:
-   "Basic base64(jira-mail@example.com:JIRA_TOKEN)" for example:
-   `Basic ZXhhbXBsZV9qaXJhQGV4YW1wbGUuY29tOjU1Q3NUSEoxWW1oTVdJSFptdGJXNUUxOA==`
+2. Get and provide `JIRA_TOKEN` as env variable:
+   1. Obtain you personal token from jira: https://id.atlassian.com/manage-profile/security/api-tokens
+   2. Create a base64-encoded string by converting "<your-atlassian-account-mail>:<your-jira-token>", for example `jira-mail@example.com:hTBgqVcrcxRYpT5TCzTA9C0F` converts to `amlyYS1tYWlsQGV4YW1wbGUuY29tOmhUQmdxVmNyY3hSWXBUNVRDelRBOUMwRg==`
+   3.  Save the environmental variable `JIRA_TOKEN` with `Basic ` prefix, eg: `JIRA_TOKEN='Basic amlyYS1tYWlsQGV4YW1wbGUuY29tOmhUQmdxVmNyY3hSWXBUNVRDelRBOUMwRg=='`
 
 ## Links
 
