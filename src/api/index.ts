@@ -23,7 +23,7 @@ export const jiraApiRef = createApiRef<JiraAPI>({
   description: 'Used by the Jira plugin to make requests',
 });
 
-const DEFAULT_PROXY_PATH = '/jira/api/';
+const DEFAULT_PROXY_PATH = '/jira/api';
 const DEFAULT_REST_API_VERSION = 3;
 
 type Options = {
@@ -139,7 +139,7 @@ export class JiraAPI {
   async getActivityStream(size: number, projectKey: string) {
     const { baseUrl } = await this.getUrls();
     const request = await axios.get(
-      `${baseUrl}activity?maxResults=${size}&streams=key+IS+${projectKey}&os_authType=basic`,
+      `${baseUrl}/activity?maxResults=${size}&streams=key+IS+${projectKey}&os_authType=basic`,
     );
     const activityStream = request.data;
     return activityStream;
