@@ -96,8 +96,8 @@ export class JiraAPI {
     statusesNames: Array<string>,
   ) {
     const { apiUrl } = await this.getUrls();
-    const request = await axios.get(`${apiUrl}project/${projectKey}`);
-    const project = request.data as Project;
+    const request = await axios.get<Project>(`${apiUrl}project/${projectKey}`);
+    const project = request.data;
 
     // Generate counters for each issue type
     const issuesTypes = project.issueTypes.map((status: IssueType) => ({
