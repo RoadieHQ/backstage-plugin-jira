@@ -115,7 +115,7 @@ export const JiraCard = ({ entity }: EntityProps) => {
           >
             <MenuItem onClick={changeType}>
               <Checkbox checked={type === 'all'} />
-              <>Show non-empty issue types</>
+              <>Show empty issue types</>
             </MenuItem>
           </Menu>
         </>
