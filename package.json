@@ -48,21 +48,5 @@
   },
   "files": [
     "dist"
-  ],
-  "configSchema": {
-    "$schema": "https://backstage.io/schema/config-v1",
-    "title": "@roadiehq/backstage-plugin-jira",
-    "type": "object",
-    "properties": {
-      "jira": {
-        "type": "object",
-        "properties": {
-          "apiVersion": {
-            "type": "number",
-            "visibility": "frontend"
-          }
-        }
-      }
-    }
-  }
+  ]
 }
