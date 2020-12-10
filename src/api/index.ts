@@ -38,12 +38,12 @@ type Options = {
 export class JiraAPI {
   private readonly discoveryApi: DiscoveryApi;
   private readonly proxyPath: string;
-  private readonly apiVersion: number;
+  private readonly apiVersion: string;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
-    this.apiVersion = options.apiVersion ?? DEFAULT_REST_API_VERSION;
+    this.apiVersion = DEFAULT_REST_API_VERSION;
   }
 
   private generateProjectUrl = (url: string) => new URL(url).origin;
