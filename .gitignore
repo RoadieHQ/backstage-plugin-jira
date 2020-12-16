@@ -95,6 +95,7 @@ typings/
 # Nuxt.js build / generate output
 .nuxt
 dist
+dist-types
 
 # Gatsby files
 .cache/
@@ -125,5 +126,3 @@ dist
 
 # MkDocs build output
 site
-
-
