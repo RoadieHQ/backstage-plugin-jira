@@ -28,6 +28,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "axios": "^0.21.0",
+    "history": "^5.0.0",
     "html-react-parser": "^0.14.1",
     "moment": "^2.29.1",
     "react": "^16.13.1",
