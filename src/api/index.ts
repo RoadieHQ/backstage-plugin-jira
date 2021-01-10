@@ -15,8 +15,8 @@
  */
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
-import axios from 'axios';
 import { IssuesCounter, IssueType, Project, Status } from '../types';
+import fetch from 'cross-fetch';
 
 export const jiraApiRef = createApiRef<JiraAPI>({
   id: 'plugin.jira.service',
@@ -81,8 +81,15 @@ export class JiraAPI {
       jql,
       maxResults: 0,
     };
-    const request = await axios.post(`${apiUrl}search`, data);
-    const response = request.data;
+
+    const request = await fetch(`${apiUrl}search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    const response = await request.json();
     return {
       total: response.total,
       name: issueType,
@@ -96,8 +103,13 @@ export class JiraAPI {
     statusesNames: Array<string>,
   ) {
     const { apiUrl } = await this.getUrls();
-    const request = await axios.get<Project>(`${apiUrl}project/${projectKey}`);
-    const project = request.data;
+
+    const request = await fetch(`${apiUrl}project/${projectKey}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const project = (await request.json()) as Project;
 
     // Generate counters for each issue type
     const issuesTypes = project.issueTypes.map((status: IssueType) => ({
@@ -138,17 +150,25 @@ export class JiraAPI {
 
   async getActivityStream(size: number, projectKey: string) {
     const { baseUrl } = await this.getUrls();
-    const request = await axios.get(
+
+    const request = await fetch(
       `${baseUrl}/activity?maxResults=${size}&streams=key+IS+${projectKey}&os_authType=basic`,
     );
-    const activityStream = request.data;
+    const activityStream = await request.text();
+
     return activityStream;
   }
 
   async getStatuses(projectKey: string) {
     const { apiUrl } = await this.getUrls();
-    const request = await axios.get(`${apiUrl}project/${projectKey}/statuses`);
-    const statuses = request.data as Array<Status>;
+
+    const request = await fetch(`${apiUrl}project/${projectKey}/statuses`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const statuses = (await request.json()) as Array<Status>;
+
     const formattedStatuses = [
       ...new Set(
         statuses
