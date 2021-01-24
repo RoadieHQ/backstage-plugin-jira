@@ -926,12 +926,12 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@backstage/catalog-model@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-0.4.0.tgz#197c33eabaad4752c1ce947c71e6a6d6cfe8b54d"
-  integrity sha512-M/OcXsOKs0Xfo6jq9EGbhhFW2Mq9DFMTxcEPAQlHkI7yOKl+AsWXVY550L25yfaIYgGXsJwy9XKUTtdaT1TmTQ==
+"@backstage/catalog-model@^0.6.0":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-0.6.1.tgz#e84aebadc4802b70630ad790a1c1a5606f0c086b"
+  integrity sha512-VcqwVbeE2PiNyhfLHSkaGAAoZT+IwThTVW5RUImsw7YUYqP24sNNRPpMCnfD19ezSaOWNNJ+mp/MybTVFtXk8A==
   dependencies:
-    "@backstage/config" "^0.1.1"
+    "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
     json-schema "^0.2.5"
