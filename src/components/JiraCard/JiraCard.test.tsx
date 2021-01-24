@@ -20,6 +20,7 @@ import { ApiRegistry, ApiProvider, UrlPatternDiscovery } from '@backstage/core';
 import { rest } from 'msw';
 import { msw } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
+// eslint-disable-next-line
 import { MemoryRouter } from 'react-router-dom';
 import { JiraAPI, jiraApiRef } from '../../api';
 import { JiraCard } from './JiraCard';
@@ -44,19 +45,19 @@ describe('JiraCard', () => {
     worker.use(
       rest.get(
         'http://exampleapi.com/jira/api/rest/api/latest/project/BT',
-        (_, res, ctx) => res(ctx.json(projectResponseStub)),
+        (_, res, ctx) => res(ctx.json(projectResponseStub))
       ),
       rest.post(
         'http://exampleapi.com/jira/api/rest/api/latest/search',
-        (_, res, ctx) => res(ctx.json(searchResponseStub)),
+        (_, res, ctx) => res(ctx.json(searchResponseStub))
       ),
       rest.get(
         'http://exampleapi.com/jira/api/rest/api/latest/project/BT/statuses',
-        (_, res, ctx) => res(ctx.json(statusesResponseStub)),
+        (_, res, ctx) => res(ctx.json(statusesResponseStub))
       ),
       rest.get('http://exampleapi.com/jira/api/activity', (_, res, ctx) =>
-        res(ctx.xml(activityResponseStub)),
-      ),
+        res(ctx.xml(activityResponseStub))
+      )
     );
   });
 
@@ -66,7 +67,7 @@ describe('JiraCard', () => {
         <ApiProvider apis={apis}>
           <JiraCard entity={entityStub} />
         </ApiProvider>
-      </MemoryRouter>,
+      </MemoryRouter>
     );
     expect(await rendered.findByText(/backstage-test/)).toBeInTheDocument();
     expect(await rendered.findByText(/testComponent/)).toBeInTheDocument();
