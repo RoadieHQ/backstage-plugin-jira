@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { ApiRegistry, ApiProvider, UrlPatternDiscovery } from '@backstage/core';
 import { rest } from 'msw';
 import { msw } from '@backstage/test-utils';
@@ -42,6 +42,9 @@ describe('JiraCard', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+  });
+
+  it('should display board and component data', async () => {
     worker.use(
       rest.get(
         'http://exampleapi.com/jira/api/rest/api/latest/project/BT',
@@ -59,9 +62,7 @@ describe('JiraCard', () => {
         res(ctx.xml(activityResponseStub))
       )
     );
-  });
 
-  it('should display board and component data', async () => {
     const rendered = render(
       <MemoryRouter>
         <ApiProvider apis={apis}>
@@ -71,5 +72,38 @@ describe('JiraCard', () => {
     );
     expect(await rendered.findByText(/backstage-test/)).toBeInTheDocument();
     expect(await rendered.findByText(/testComponent/)).toBeInTheDocument();
+  });
+
+  it('should display an error on fetch failure', async () => {
+    worker.use(
+      rest.get(
+        'http://exampleapi.com/jira/api/rest/api/latest/project/BT',
+        (_, res, ctx) => res(ctx.status(403))
+      ),
+      rest.post(
+        'http://exampleapi.com/jira/api/rest/api/latest/search',
+        (_, res, ctx) => res(ctx.status(403))
+      ),
+      rest.get(
+        'http://exampleapi.com/jira/api/rest/api/latest/project/BT/statuses',
+        (_, res, ctx) => res(ctx.status(403))
+      ),
+      rest.get('http://exampleapi.com/jira/api/activity', (_, res, ctx) =>
+        res(ctx.status(403))
+      )
+    );
+    const rendered = render(
+      <MemoryRouter>
+        <ApiProvider apis={apis}>
+          <JiraCard entity={entityStub} />
+        </ApiProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(async () =>
+      expect(
+        await rendered.findByText(/status 403: Forbidden/)
+      ).toBeInTheDocument()
+    );
   });
 });

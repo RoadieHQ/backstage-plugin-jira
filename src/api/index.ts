@@ -59,7 +59,7 @@ export class JiraAPI {
   private convertToString = (arrayElement: Array<string>): string =>
     arrayElement
       .filter(Boolean)
-      .map(i => `'${i}'`)
+      .map((i) => `'${i}'`)
       .join(',');
 
   private async getIssuesCountByType(
@@ -68,7 +68,7 @@ export class JiraAPI {
     component: string,
     statusesNames: Array<string>,
     issueType: string,
-    issueIcon: string,
+    issueIcon: string
   ) {
     const statusesString = this.convertToString(statusesNames);
     const jql = `
@@ -89,6 +89,11 @@ export class JiraAPI {
       },
       body: JSON.stringify(data),
     });
+    if (!request.ok) {
+      throw new Error(
+        `failed to fetch data, status ${request.status}: ${request.statusText}`
+      );
+    }
     const response = await request.json();
     return {
       total: response.total,
@@ -100,7 +105,7 @@ export class JiraAPI {
   async getProjectDetails(
     projectKey: string,
     component: string,
-    statusesNames: Array<string>,
+    statusesNames: Array<string>
   ) {
     const { apiUrl } = await this.getUrls();
 
@@ -109,6 +114,11 @@ export class JiraAPI {
         'Content-Type': 'application/json',
       },
     });
+    if (!request.ok) {
+      throw new Error(
+        `failed to fetch data, status ${request.status}: ${request.statusText}`
+      );
+    }
     const project = (await request.json()) as Project;
 
     // Generate counters for each issue type
@@ -118,7 +128,7 @@ export class JiraAPI {
     }));
 
     const issuesCounterByType = await Promise.all(
-      issuesTypes.map(issue => {
+      issuesTypes.map((issue) => {
         const issueType = issue.name;
         const issueIcon = issue.iconUrl;
         return this.getIssuesCountByType(
@@ -127,9 +137,9 @@ export class JiraAPI {
           component,
           statusesNames,
           issueType,
-          issueIcon,
+          issueIcon
         );
-      }),
+      })
     );
 
     return {
@@ -141,7 +151,7 @@ export class JiraAPI {
       },
       issues:
         issuesCounterByType && issuesCounterByType.length
-          ? issuesCounterByType.map(status => ({
+          ? issuesCounterByType.map((status) => ({
               ...status,
             }))
           : [],
@@ -152,8 +162,13 @@ export class JiraAPI {
     const { baseUrl } = await this.getUrls();
 
     const request = await fetch(
-      `${baseUrl}/activity?maxResults=${size}&streams=key+IS+${projectKey}&os_authType=basic`,
+      `${baseUrl}/activity?maxResults=${size}&streams=key+IS+${projectKey}&os_authType=basic`
     );
+    if (!request.ok) {
+      throw new Error(
+        `failed to fetch data, status ${request.status}: ${request.statusText}`
+      );
+    }
     const activityStream = await request.text();
 
     return activityStream;
@@ -167,13 +182,18 @@ export class JiraAPI {
         'Content-Type': 'application/json',
       },
     });
+    if (!request.ok) {
+      throw new Error(
+        `failed to fetch data, status ${request.status}: ${request.statusText}`
+      );
+    }
     const statuses = (await request.json()) as Array<Status>;
 
     const formattedStatuses = [
       ...new Set(
         statuses
-          .map(status => status.statuses.map(s => s.name))
-          .reduce((acc, val) => acc.concat(val), []),
+          .map((status) => status.statuses.map((s) => s.name))
+          .reduce((acc, val) => acc.concat(val), [])
       ),
     ];
     return formattedStatuses;
