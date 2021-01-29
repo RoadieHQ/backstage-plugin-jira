@@ -34,7 +34,7 @@
     "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^15.3.3",
+    "react-use": "^15.3.6",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
