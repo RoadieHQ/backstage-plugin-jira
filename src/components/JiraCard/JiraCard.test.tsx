@@ -48,19 +48,19 @@ describe('JiraCard', () => {
     worker.use(
       rest.get(
         'http://exampleapi.com/jira/api/rest/api/latest/project/BT',
-        (_, res, ctx) => res(ctx.json(projectResponseStub))
+        (_, res, ctx) => res(ctx.json(projectResponseStub)),
       ),
       rest.post(
         'http://exampleapi.com/jira/api/rest/api/latest/search',
-        (_, res, ctx) => res(ctx.json(searchResponseStub))
+        (_, res, ctx) => res(ctx.json(searchResponseStub)),
       ),
       rest.get(
         'http://exampleapi.com/jira/api/rest/api/latest/project/BT/statuses',
-        (_, res, ctx) => res(ctx.json(statusesResponseStub))
+        (_, res, ctx) => res(ctx.json(statusesResponseStub)),
       ),
       rest.get('http://exampleapi.com/jira/api/activity', (_, res, ctx) =>
-        res(ctx.xml(activityResponseStub))
-      )
+        res(ctx.xml(activityResponseStub)),
+      ),
     );
 
     const rendered = render(
@@ -68,7 +68,7 @@ describe('JiraCard', () => {
         <ApiProvider apis={apis}>
           <JiraCard entity={entityStub} />
         </ApiProvider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     expect(await rendered.findByText(/backstage-test/)).toBeInTheDocument();
     expect(await rendered.findByText(/testComponent/)).toBeInTheDocument();
@@ -78,32 +78,33 @@ describe('JiraCard', () => {
     worker.use(
       rest.get(
         'http://exampleapi.com/jira/api/rest/api/latest/project/BT',
-        (_, res, ctx) => res(ctx.status(403))
+        (_, res, ctx) => res(ctx.status(403)),
       ),
       rest.post(
         'http://exampleapi.com/jira/api/rest/api/latest/search',
-        (_, res, ctx) => res(ctx.status(403))
+        (_, res, ctx) => res(ctx.status(403)),
       ),
       rest.get(
         'http://exampleapi.com/jira/api/rest/api/latest/project/BT/statuses',
-        (_, res, ctx) => res(ctx.status(403))
+        (_, res, ctx) => res(ctx.status(403)),
       ),
       rest.get('http://exampleapi.com/jira/api/activity', (_, res, ctx) =>
-        res(ctx.status(403))
-      )
+        res(ctx.status(403)),
+      ),
     );
     const rendered = render(
       <MemoryRouter>
         <ApiProvider apis={apis}>
           <JiraCard entity={entityStub} />
         </ApiProvider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
-    await waitFor(async () =>
-      expect(
-        await rendered.findByText(/status 403: Forbidden/)
-      ).toBeInTheDocument()
-    );
+    await waitFor(() => {
+      // eslint-disable-next-line
+      rendered
+        .findByText(/status 403: Forbidden/)
+        .then(text => expect(text).toBeInTheDocument());
+    });
   });
 });
