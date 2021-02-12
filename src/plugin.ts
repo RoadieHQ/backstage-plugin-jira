@@ -38,7 +38,7 @@ export const jiraPlugin = createPlugin({
   ],
 });
 
-export const EntityArgoCDOverviewCard = jiraPlugin.provide(
+export const EntityJiraOverviewCard = jiraPlugin.provide(
   createComponentExtension({
     component: {
       lazy: () => import('./components/JiraCard').then((m) => m.JiraCard),

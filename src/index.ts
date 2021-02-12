@@ -19,6 +19,7 @@ export {
    */
   jiraPlugin as plugin,
   jiraPlugin,
+  EntityJiraOverviewCard,
 } from './plugin';
 export {
   /**
