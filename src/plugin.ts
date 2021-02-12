@@ -16,18 +16,13 @@
 import {
   configApiRef,
   createPlugin,
-  createRouteRef,
   createApiFactory,
   discoveryApiRef,
+  createComponentExtension,
 } from '@backstage/core';
 import { jiraApiRef, JiraAPI } from './api';
 
-export const rootRouteRef = createRouteRef({
-  path: '/jira',
-  title: 'jira',
-});
-
-export const plugin = createPlugin({
+export const jiraPlugin = createPlugin({
   id: 'jira',
   apis: [
     createApiFactory({
@@ -42,3 +37,11 @@ export const plugin = createPlugin({
     }),
   ],
 });
+
+export const EntityArgoCDOverviewCard = jiraPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/JiraCard').then((m) => m.JiraCard),
+    },
+  })
+);
