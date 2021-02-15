@@ -907,19 +907,6 @@
     "@backstage/config" "^0.1.2"
     cross-fetch "^3.0.6"
 
-"@backstage/catalog-model@^0.6.0":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-0.6.1.tgz#e84aebadc4802b70630ad790a1c1a5606f0c086b"
-  integrity sha512-VcqwVbeE2PiNyhfLHSkaGAAoZT+IwThTVW5RUImsw7YUYqP24sNNRPpMCnfD19ezSaOWNNJ+mp/MybTVFtXk8A==
-  dependencies:
-    "@backstage/config" "^0.1.2"
-    "@types/json-schema" "^7.0.5"
-    "@types/yup" "^0.29.8"
-    json-schema "^0.2.5"
-    lodash "^4.17.15"
-    uuid "^8.0.0"
-    yup "^0.29.3"
-
 "@backstage/catalog-model@^0.7.0", "@backstage/catalog-model@^0.7.1":
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-0.7.1.tgz#56089c9e027322241f621398e71c33153f2a83c8"
