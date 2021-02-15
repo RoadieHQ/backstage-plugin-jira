@@ -1054,10 +1054,10 @@
     react-use "^15.3.3"
     zen-observable "^0.8.15"
 
-"@backstage/core@^0.4.3":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@backstage/core/-/core-0.4.4.tgz#83d5ce5c8dd8a9803badc1dde389b5bde963e959"
-  integrity sha512-UEZhPBC7DAZEOCRAYQ9XcXch5JDuPn+wYNp65Ik60SSz/RFjqhq8D3P7V074cMQqWLAddVDj5dUrNeN8N1gAUQ==
+"@backstage/core@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@backstage/core/-/core-0.5.0.tgz#6ff384adc595c18c7db60b9b2d23ebbb9086ed36"
+  integrity sha512-lCxgKBavUlLYZjZmRF8A7koP4NUhK/tbdf9SaEod0miZg6JTaDoAm3dmHPyqrMBHgoRRCDTxRIxNhj/8vY87oA==
   dependencies:
     "@backstage/config" "^0.1.2"
     "@backstage/core-api" "^0.2.8"
@@ -1075,7 +1075,7 @@
     d3-shape "^2.0.0"
     d3-zoom "^2.0.0"
     dagre "^0.8.5"
-    immer "^7.0.9"
+    immer "^8.0.1"
     lodash "^4.17.15"
     material-table "^1.69.1"
     prop-types "^15.7.2"
@@ -6612,11 +6612,6 @@ immer@1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
-
-immer@^7.0.9:
-  version "7.0.15"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-7.0.15.tgz#dc3bc6db87401659d2e737c67a21b227c484a4ad"
-  integrity sha512-yM7jo9+hvYgvdCQdqvhCNRRio0SCXc8xDPzA25SvKWa7b1WVPjLwQs1VYU5JPXjcJPTqAa5NP5dqpORGYBQ2AA==
 
 immer@^8.0.1:
   version "8.0.1"
