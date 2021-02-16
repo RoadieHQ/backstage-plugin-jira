@@ -13,6 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
-export { JiraCard } from './components/JiraCard';
-export * from './components/Router';
+export {
+  /**
+   * @deprecated since v0.3.0 you should use new name 'jiraPlugin'
+   */
+  jiraPlugin as plugin,
+  jiraPlugin,
+  EntityJiraOverviewCard,
+} from './plugin';
+export {
+  /**
+   * @deprecated since v0.3.0 you should use new composability API
+   */
+  JiraCard,
+} from './components/JiraCard';
+export {
+  /**
+   * @deprecated since v0.3.0 you should use new name 'isJiraAvailable'
+   */
+  isJiraAvailable as isPluginApplicableToEntity,
+  isJiraAvailable,
+} from './components/Router';

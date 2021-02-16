@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { plugin } from './plugin';
+import { jiraPlugin } from './plugin';
 
 describe('jira', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(jiraPlugin).toBeDefined();
   });
 });
