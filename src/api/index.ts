@@ -43,7 +43,8 @@ export class JiraAPI {
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
-    this.apiVersion = options.apiVersion ?? options.apiVersion.toString() : DEFAULT_REST_API_VERSION;
+    
+    this.apiVersion = options.apiVersion ? options.apiVersion.toString() : DEFAULT_REST_API_VERSION;
   }
 
   private generateProjectUrl = (url: string) => new URL(url).origin;
