@@ -31,6 +31,7 @@ import parse, {
   attributesToProps,
   DomElement,
 } from 'html-react-parser';
+import sanitizeHtml from 'sanitize-html';
 import { useActivityStream } from '../../../hooks';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -140,7 +141,12 @@ export const ActivityStream = ({ projectKey }: { projectKey: string }) => {
               <Box key={entry.id}>
                 {parse(entry.title, options)}
                 <Box>
-                  {parse(entry.summary || entry.content || '', options)}
+                {parse(
+                    sanitizeHtml(entry.summary || entry.content || '', {
+                      disallowedTagsMode: 'escape',
+                    }),
+                    options
+                  )}
                 </Box>
                 <Box display="flex" alignItems="center" mt={1}>
                   <Tooltip title={entry.icon.title}>
