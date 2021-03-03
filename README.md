@@ -31,14 +31,29 @@ proxy:
       User-Agent: "MY-UA-STRING"
 ```
 
-3. Add plugin to the list of plugins:
+3. Set img-src in Content Security Policy
+
+```
+// app-config.yaml
+backend:
+  # ...
+  csp:
+    img-src:
+      # "'self'" and 'data' are from the backstage default but must be set since img-src is overriden
+      - "'self'"
+      - 'data:'
+      # Allow your Jira instance for @roadiehq/backstage-plugin-jira
+      - 'JIRA_URL'
+```
+
+4. Add plugin to the list of plugins:
 
 ```ts
 // packages/app/src/plugins.ts
 export { plugin as Jira } from '@roadiehq/backstage-plugin-jira';
 ```
 
-4. Add plugin component to your Backstage instance:
+5. Add plugin component to your Backstage instance:
 
 ```ts
 // packages/app/src/components/catalog/EntityPage.tsx
