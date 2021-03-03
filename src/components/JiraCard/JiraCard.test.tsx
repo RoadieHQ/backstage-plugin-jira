@@ -72,6 +72,8 @@ describe('JiraCard', () => {
     );
     expect(await rendered.findByText(/backstage-test/)).toBeInTheDocument();
     expect(await rendered.findByText(/testComponent/)).toBeInTheDocument();
+    expect(await rendered.findByText(/changed the status to Selected for Development/)).toBeInTheDocument();
+    expect(await rendered.findByText(/Add basic test/)).toBeInTheDocument();
   });
 
   it('should display an error on fetch failure', async () => {

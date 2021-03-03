@@ -57,7 +57,7 @@ export type ActivityStreamElement = {
     value: string;
   };
   title: string;
-  icon: {
+  icon?: {
     url: string;
     title: string;
   };
@@ -78,7 +78,7 @@ export type ActivityStreamEntry = {
   summary: PropertyValue;
   content: PropertyValue;
   id: PropertyValue;
-  link: Array<{
+  link?: Array<{
     _attributes: {
       href: string;
       title: string;
