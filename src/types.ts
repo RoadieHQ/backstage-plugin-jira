@@ -82,6 +82,7 @@ export type ActivityStreamEntry = {
     _attributes: {
       href: string;
       title: string;
+      rel: string;
     };
   }>;
 };

@@ -70,10 +70,19 @@ describe('JiraCard', () => {
         </ApiProvider>
       </MemoryRouter>,
     );
+
     expect(await rendered.findByText(/backstage-test/)).toBeInTheDocument();
     expect(await rendered.findByText(/testComponent/)).toBeInTheDocument();
-    expect(await rendered.findByText(/changed the status to Selected for Development/)).toBeInTheDocument();
+    expect(
+      await rendered.findByText(
+        /changed the status to Selected for Development/,
+      ),
+    ).toBeInTheDocument();
     expect(await rendered.findByText(/Add basic test/)).toBeInTheDocument();
+    expect(await rendered.getByAltText(/Page/)).toHaveAttribute(
+      'src',
+      expect.stringContaining('mocked_icon_filename.gif'),
+    );
   });
 
   it('should display an error on fetch failure', async () => {

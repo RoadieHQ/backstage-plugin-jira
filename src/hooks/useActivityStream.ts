@@ -51,12 +51,16 @@ export const useActivityStream = (size: number, projectKey: string) => {
         (entry: ActivityStreamEntry): ActivityStreamElement => {
           const id = getPropertyValue(entry, 'id') || `urn:uuid:${uuidv4()}`
           const time = getPropertyValue(entry, 'updated');
+          const iconLink = entry.link?.find(
+            link =>
+              link._attributes.rel ===
+              'http://streams.atlassian.com/syndication/icon',
+          );
           let icon;
-          if (entry.link?.[1]) {
-            const iconAttrs = entry.link[1]._attributes
+          if (iconLink) {
             icon = {
-              url: iconAttrs.href,
-              title: iconAttrs.title
+              url: iconLink._attributes.href,
+              title: iconLink._attributes.title,
             };
           }
           return {
