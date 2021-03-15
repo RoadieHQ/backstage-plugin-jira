@@ -14,11 +14,28 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
+import { CustomQuery } from '../types';
 
 export const JIRA_PROJECT_KEY_ANNOTATION = 'jira/project-key';
 const JIRA_COMPONENT_ANNOTATION = 'jira/component';
+const JIRA_QUERIES_ANNOTATION = 'jira/queries';
 
 export const useProjectEntity = (entity: Entity) => {
+  const annotations = entity.metadata?.annotations;
+  const queries = annotations
+    ? Object.entries(annotations)
+        .map(([annotation, query]) => {
+          if (annotation.startsWith(JIRA_QUERIES_ANNOTATION)) {
+            return {
+              name: annotation.replace(`${JIRA_QUERIES_ANNOTATION}-`, ''),
+              query,
+            };
+          }
+          return null;
+        })
+        .filter((it): it is CustomQuery => it !== null)
+    : [];
+
   return {
     projectKey: entity.metadata?.annotations?.[
       JIRA_PROJECT_KEY_ANNOTATION
@@ -26,5 +43,6 @@ export const useProjectEntity = (entity: Entity) => {
     component: entity.metadata?.annotations?.[
       JIRA_COMPONENT_ANNOTATION
     ] as string,
+    queries,
   };
 };

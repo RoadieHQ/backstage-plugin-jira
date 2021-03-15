@@ -37,6 +37,7 @@ import { ActivityStream } from './components/ActivityStream';
 import { Selectors } from './components/Selectors';
 import { useEmptyIssueTypeFilter } from '../../hooks/useEmptyIssueTypeFilter';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { useStatusCategoryFilter } from '../../hooks/useStatusCategoryFilter';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,6 +57,11 @@ const useStyles = makeStyles((theme: Theme) =>
     actions: {
       // It's a workaroung for strange styles set in @backstage/core InfoCard component
       margin: theme.spacing(-8, -8, 0, 0),
+    },
+    statusOptions: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'end',
     },
   }),
 );
@@ -78,20 +84,22 @@ const CardProjectDetails = ({
 
 export const JiraCard = ({ entity }: EntityProps) => {
   const classes = useStyles();
-  const { projectKey, component } = useProjectEntity(entity);
+  const { projectKey, component, queries } = useProjectEntity(entity);
   const [statusesNames, setStatusesNames] = useState<Array<string>>([]);
+  const { category, changeCategory } = useStatusCategoryFilter();
   const {
     project,
     issues,
     projectLoading,
     projectError,
     fetchProjectInfo,
-  } = useProjectInfo(projectKey, component, statusesNames);
+  } = useProjectInfo(projectKey, component, statusesNames, queries, category);
   const {
     issueTypes: displayIssues,
     type,
     changeType,
   } = useEmptyIssueTypeFilter(issues);
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -153,12 +161,25 @@ export const JiraCard = ({ entity }: EntityProps) => {
       ) : null}
       {project && issues ? (
         <div className={classes.root}>
-          <Selectors
-            projectKey={projectKey}
-            statusesNames={statusesNames}
-            setStatusesNames={setStatusesNames}
-            fetchProjectInfo={fetchProjectInfo}
-          />
+          {queries.length === 0 ? (
+            <div className={classes.statusOptions}>
+              <div>
+                <Typography variant="body2">
+                  Show 'Done' status category
+                  <Checkbox
+                    onChange={changeCategory}
+                    checked={category === 'all'}
+                  />
+                </Typography>
+              </div>
+              <Selectors
+                projectKey={projectKey}
+                statusesNames={statusesNames}
+                setStatusesNames={setStatusesNames}
+                fetchProjectInfo={fetchProjectInfo}
+              />
+            </div>
+          ) : null}
           <Grid container spacing={3}>
             {displayIssues?.map(issueType => (
               <Grid item xs key={issueType.name}>

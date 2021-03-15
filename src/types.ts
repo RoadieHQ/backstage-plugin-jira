@@ -37,6 +37,11 @@ export type IssueType = {
   iconUrl: string;
 };
 
+export type CustomQuery = {
+  name: string;
+  query: string;
+};
+
 export type IssuesCounter = {
   total: number;
   name: string;
