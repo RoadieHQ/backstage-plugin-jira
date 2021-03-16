@@ -19,7 +19,7 @@ import { Box, Typography, makeStyles, createStyles } from '@material-ui/core';
 const useStyles = makeStyles(() =>
   createStyles({
     subtitles: {
-      lineHeight: 0,
+      whiteSpace: 'nowrap',
     },
   }),
 );
@@ -35,10 +35,8 @@ export const Status = ({
   return (
     <Box display="flex" alignItems="center" justifyContent="center" mb={1}>
       <img src={iconUrl} alt="" />
-      <Box ml={1}>
-        <Typography variant="subtitle2" className={classes.subtitles}>
-          {name}
-        </Typography>
+      <Box ml={1} className={classes.subtitles}>
+        <Typography variant="subtitle2">{name}</Typography>
       </Box>
     </Box>
   );
