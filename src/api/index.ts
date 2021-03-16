@@ -15,15 +15,8 @@
  */
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
-import {
-  CustomQuery,
-  IssuesCounter,
-  IssueType,
-  Project,
-  Status,
-} from '../types';
+import { IssuesCounter, IssueType, Project, Status } from '../types';
 import fetch from 'cross-fetch';
-import { StatusCategoryType } from '../hooks/useStatusCategoryFilter';
 
 export const jiraApiRef = createApiRef<JiraAPI>({
   id: 'plugin.jira.service',
@@ -32,6 +25,7 @@ export const jiraApiRef = createApiRef<JiraAPI>({
 
 const DEFAULT_PROXY_PATH = '/jira/api';
 const DEFAULT_REST_API_VERSION = 'latest';
+const DONE_STATUS_CATEGORY = 'Done';
 
 type Options = {
   discoveryApi: DiscoveryApi;
@@ -72,47 +66,6 @@ export class JiraAPI {
       .map(i => `'${i}'`)
       .join(',');
 
-  private constructStatusCategoryClause = (
-    statusCategory?: StatusCategoryType,
-  ): string | null => {
-    switch (statusCategory) {
-      case 'not-done':
-        return 'AND statuscategory not in ("Done")';
-      case 'all':
-        return null;
-      default:
-        return null;
-    }
-  };
-
-  private async getItemsByCustomQuery(
-    apiUrl: string,
-    { name, query }: CustomQuery,
-  ) {
-    const data = {
-      jql: query,
-      maxResults: 0,
-    };
-
-    const request = await fetch(`${apiUrl}search`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!request.ok) {
-      throw new Error(
-        `failed to fetch data, status ${request.status}: ${request.statusText}`,
-      );
-    }
-    const response = await request.json();
-    return {
-      total: response.total,
-      name: name,
-    } as IssuesCounter;
-  }
-
   private async getIssuesCountByType({
     apiUrl,
     projectKey,
@@ -120,7 +73,6 @@ export class JiraAPI {
     statusesNames,
     issueType,
     issueIcon,
-    statusCategory,
   }: {
     apiUrl: string;
     projectKey: string;
@@ -128,18 +80,14 @@ export class JiraAPI {
     statusesNames: Array<string>;
     issueType: string;
     issueIcon: string;
-    statusCategory?: StatusCategoryType;
   }) {
     const statusesString = this.convertToString(statusesNames);
-    const statusCategoryClause = this.constructStatusCategoryClause(
-      statusCategory,
-    );
 
     const jql = `project = "${projectKey}"
       AND issuetype = "${issueType}"
       ${statusesString ? `AND status in (${statusesString})` : ''}
-      ${statusCategoryClause ? statusCategoryClause : ''}
       ${component ? `AND component = "${component}"` : ''}
+      AND statuscategory not in ("Done")
     `;
     const data = {
       jql,
@@ -170,8 +118,6 @@ export class JiraAPI {
     projectKey: string,
     component: string,
     statusesNames: Array<string>,
-    queries: CustomQuery[],
-    statusCategory?: StatusCategoryType,
   ) {
     const { apiUrl } = await this.getUrls();
 
@@ -193,28 +139,20 @@ export class JiraAPI {
       iconUrl: status.iconUrl,
     }));
 
-    const issuesCounter =
-      queries.length > 0
-        ? await Promise.all(
-            queries.map(query => {
-              return this.getItemsByCustomQuery(apiUrl, query);
-            }),
-          )
-        : await Promise.all(
-            issuesTypes.map(issue => {
-              const issueType = issue.name;
-              const issueIcon = issue.iconUrl;
-              return this.getIssuesCountByType({
-                apiUrl,
-                projectKey,
-                component,
-                statusesNames,
-                statusCategory,
-                issueType,
-                issueIcon,
-              });
-            }),
-          );
+    const issuesCounter = await Promise.all(
+      issuesTypes.map(issue => {
+        const issueType = issue.name;
+        const issueIcon = issue.iconUrl;
+        return this.getIssuesCountByType({
+          apiUrl,
+          projectKey,
+          component,
+          statusesNames,
+          issueType,
+          issueIcon,
+        });
+      }),
+    );
 
     return {
       project: {
@@ -266,8 +204,15 @@ export class JiraAPI {
     return [
       ...new Set(
         statuses
-          .map(status => status.statuses.map(s => s.name))
-          .reduce((acc, val) => acc.concat(val), []),
+          .flatMap(status => status.statuses)
+          .filter(
+            status => status.statusCategory?.name !== DONE_STATUS_CATEGORY,
+          )
+          .map(it => it.name)
+          .reduce((acc, val) => {
+            acc.push(val);
+            return acc;
+          }, [] as string[]),
       ),
     ];
   }

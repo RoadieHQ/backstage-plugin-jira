@@ -37,11 +37,6 @@ export type IssueType = {
   iconUrl: string;
 };
 
-export type CustomQuery = {
-  name: string;
-  query: string;
-};
-
 export type IssuesCounter = {
   total: number;
   name: string;
@@ -112,5 +107,5 @@ export type ProjectDetailsProps = {
 };
 
 export type Status = {
-  statuses: Array<{ name: string }>;
+  statuses: Array<{ name: string; statusCategory: { name: string } }>;
 };

@@ -18,36 +18,25 @@ import { useApi } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
 import { handleError } from './utils';
 import { jiraApiRef } from '../api';
-import { StatusCategoryType } from './useStatusCategoryFilter';
-import { CustomQuery } from '../types';
 
 export const useProjectInfo = (
   projectKey: string,
   component: string,
   statusesNames: Array<string>,
-  queries: CustomQuery[],
-  statusCategory?: StatusCategoryType,
 ) => {
   const api = useApi(jiraApiRef);
 
   const getProjectDetails = useCallback(async () => {
     try {
       setTimeout(() => (document.activeElement as HTMLElement).blur(), 0);
-      return await api.getProjectDetails(
-        projectKey,
-        component,
-        statusesNames,
-        queries,
-        statusCategory,
-      );
+      return await api.getProjectDetails(projectKey, component, statusesNames);
     } catch (err) {
       return handleError(err);
     }
-  }, [api, projectKey, component, statusesNames, statusCategory, queries]);
+  }, [api, projectKey, component, statusesNames]);
 
   const [state, fetchProjectInfo] = useAsyncFn(() => getProjectDetails(), [
     statusesNames,
-    statusCategory,
   ]);
 
   useEffect(() => {
