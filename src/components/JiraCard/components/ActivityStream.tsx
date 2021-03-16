@@ -87,6 +87,10 @@ const useStyles = makeStyles((theme: Theme) =>
       lineHeight: 0,
       marginLeft: theme.spacing(1),
     },
+    timeNoIcon: {
+      lineHeight: 0,
+      margin: '8px 0',
+    },
     link: {
       cursor: 'pointer',
     },
@@ -149,11 +153,13 @@ export const ActivityStream = ({ projectKey }: { projectKey: string }) => {
                   )}
                 </Box>
                 <Box display="flex" alignItems="center" mt={1}>
-                  <Tooltip title={entry.icon.title}>
-                    <img src={entry.icon.url} alt={entry.icon.title} />
-                  </Tooltip>
+                  {entry.icon ? (
+                    <Tooltip title={entry.icon.title}>
+                      <img src={entry.icon.url} alt={entry.icon.title} />
+                    </Tooltip>
+                  ) : null}
                   <Tooltip title={entry.time.value}>
-                    <Typography variant="caption" className={classes.time}>
+                    <Typography variant="caption" className={entry.icon ? classes.time : classes.timeNoIcon}>
                       {entry.time.elapsed}
                     </Typography>
                   </Tooltip>

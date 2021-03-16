@@ -16,6 +16,7 @@
 import { useEffect, useCallback } from 'react';
 import convert from 'xml-js';
 import moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 import { useApi } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
 import { handleError } from './utils';
@@ -48,10 +49,22 @@ export const useActivityStream = (size: number, projectKey: string) => {
       );
       const mappedData = parsedData.feed.entry.map(
         (entry: ActivityStreamEntry): ActivityStreamElement => {
+          const id = getPropertyValue(entry, 'id') || `urn:uuid:${uuidv4()}`
           const time = getPropertyValue(entry, 'updated');
-          const icon = entry.link[1]._attributes;
+          const iconLink = entry.link?.find(
+            link =>
+              link._attributes.rel ===
+              'http://streams.atlassian.com/syndication/icon',
+          );
+          let icon;
+          if (iconLink) {
+            icon = {
+              url: iconLink._attributes.href,
+              title: iconLink._attributes.title,
+            };
+          }
           return {
-            id: getPropertyValue(entry, 'id'),
+            id: id,
             time: {
               elapsed: getElapsedTime(time),
               value: new Date(time).toLocaleTimeString('en-US', {
@@ -62,10 +75,7 @@ export const useActivityStream = (size: number, projectKey: string) => {
               }),
             },
             title: decodeHtml(getPropertyValue(entry, 'title')),
-            icon: {
-              url: icon.href,
-              title: icon.title,
-            },
+            icon: icon,
             summary: decodeHtml(getPropertyValue(entry, 'summary') || ''),
             content: decodeHtml(getPropertyValue(entry, 'content') || ''),
           };
