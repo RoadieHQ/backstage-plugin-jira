@@ -41,7 +41,7 @@
     "react-dom": "^16.13.1",
     "react-use": "^15.3.6",
     "sanitize-html": "^2.3.2",
-    "uuid": "8.3.0",
+    "uuid": "8.3.2",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
