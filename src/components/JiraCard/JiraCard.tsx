@@ -92,6 +92,7 @@ export const JiraCard = ({ entity }: EntityProps) => {
     type,
     changeType,
   } = useEmptyIssueTypeFilter(issues);
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {

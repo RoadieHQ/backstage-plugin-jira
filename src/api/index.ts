@@ -25,6 +25,7 @@ export const jiraApiRef = createApiRef<JiraAPI>({
 
 const DEFAULT_PROXY_PATH = '/jira/api';
 const DEFAULT_REST_API_VERSION = 'latest';
+const DONE_STATUS_CATEGORY = 'Done';
 
 type Options = {
   discoveryApi: DiscoveryApi;
@@ -43,8 +44,10 @@ export class JiraAPI {
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
-    
-    this.apiVersion = options.apiVersion ? options.apiVersion.toString() : DEFAULT_REST_API_VERSION;
+
+    this.apiVersion = options.apiVersion
+      ? options.apiVersion.toString()
+      : DEFAULT_REST_API_VERSION;
   }
 
   private generateProjectUrl = (url: string) => new URL(url).origin;
@@ -60,23 +63,31 @@ export class JiraAPI {
   private convertToString = (arrayElement: Array<string>): string =>
     arrayElement
       .filter(Boolean)
-      .map((i) => `'${i}'`)
+      .map(i => `'${i}'`)
       .join(',');
 
-  private async getIssuesCountByType(
-    apiUrl: string,
-    projectKey: string,
-    component: string,
-    statusesNames: Array<string>,
-    issueType: string,
-    issueIcon: string
-  ) {
+  private async getIssuesCountByType({
+    apiUrl,
+    projectKey,
+    component,
+    statusesNames,
+    issueType,
+    issueIcon,
+  }: {
+    apiUrl: string;
+    projectKey: string;
+    component: string;
+    statusesNames: Array<string>;
+    issueType: string;
+    issueIcon: string;
+  }) {
     const statusesString = this.convertToString(statusesNames);
-    const jql = `
-      project = "${projectKey}"
+
+    const jql = `project = "${projectKey}"
       AND issuetype = "${issueType}"
       ${statusesString ? `AND status in (${statusesString})` : ''}
       ${component ? `AND component = "${component}"` : ''}
+      AND statuscategory not in ("Done")
     `;
     const data = {
       jql,
@@ -92,7 +103,7 @@ export class JiraAPI {
     });
     if (!request.ok) {
       throw new Error(
-        `failed to fetch data, status ${request.status}: ${request.statusText}`
+        `failed to fetch data, status ${request.status}: ${request.statusText}`,
       );
     }
     const response = await request.json();
@@ -106,7 +117,7 @@ export class JiraAPI {
   async getProjectDetails(
     projectKey: string,
     component: string,
-    statusesNames: Array<string>
+    statusesNames: Array<string>,
   ) {
     const { apiUrl } = await this.getUrls();
 
@@ -117,7 +128,7 @@ export class JiraAPI {
     });
     if (!request.ok) {
       throw new Error(
-        `failed to fetch data, status ${request.status}: ${request.statusText}`
+        `failed to fetch data, status ${request.status}: ${request.statusText}`,
       );
     }
     const project = (await request.json()) as Project;
@@ -128,19 +139,19 @@ export class JiraAPI {
       iconUrl: status.iconUrl,
     }));
 
-    const issuesCounterByType = await Promise.all(
-      issuesTypes.map((issue) => {
+    const issuesCounter = await Promise.all(
+      issuesTypes.map(issue => {
         const issueType = issue.name;
         const issueIcon = issue.iconUrl;
-        return this.getIssuesCountByType(
+        return this.getIssuesCountByType({
           apiUrl,
           projectKey,
           component,
           statusesNames,
           issueType,
-          issueIcon
-        );
-      })
+          issueIcon,
+        });
+      }),
     );
 
     return {
@@ -151,8 +162,8 @@ export class JiraAPI {
         url: this.generateProjectUrl(project.self),
       },
       issues:
-        issuesCounterByType && issuesCounterByType.length
-          ? issuesCounterByType.map((status) => ({
+        issuesCounter && issuesCounter.length
+          ? issuesCounter.map(status => ({
               ...status,
             }))
           : [],
@@ -163,11 +174,11 @@ export class JiraAPI {
     const { baseUrl } = await this.getUrls();
 
     const request = await fetch(
-      `${baseUrl}/activity?maxResults=${size}&streams=key+IS+${projectKey}&os_authType=basic`
+      `${baseUrl}/activity?maxResults=${size}&streams=key+IS+${projectKey}&os_authType=basic`,
     );
     if (!request.ok) {
       throw new Error(
-        `failed to fetch data, status ${request.status}: ${request.statusText}`
+        `failed to fetch data, status ${request.status}: ${request.statusText}`,
       );
     }
     const activityStream = await request.text();
@@ -185,18 +196,24 @@ export class JiraAPI {
     });
     if (!request.ok) {
       throw new Error(
-        `failed to fetch data, status ${request.status}: ${request.statusText}`
+        `failed to fetch data, status ${request.status}: ${request.statusText}`,
       );
     }
     const statuses = (await request.json()) as Array<Status>;
 
-    const formattedStatuses = [
+    return [
       ...new Set(
         statuses
-          .map((status) => status.statuses.map((s) => s.name))
-          .reduce((acc, val) => acc.concat(val), [])
+          .flatMap(status => status.statuses)
+          .filter(
+            status => status.statusCategory?.name !== DONE_STATUS_CATEGORY,
+          )
+          .map(it => it.name)
+          .reduce((acc, val) => {
+            acc.push(val);
+            return acc;
+          }, [] as string[]),
       ),
     ];
-    return formattedStatuses;
   }
 }

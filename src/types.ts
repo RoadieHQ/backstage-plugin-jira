@@ -108,5 +108,5 @@ export type ProjectDetailsProps = {
 };
 
 export type Status = {
-  statuses: Array<{ name: string }>;
+  statuses: Array<{ name: string; statusCategory: { name: string } }>;
 };
