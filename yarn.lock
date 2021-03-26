@@ -907,12 +907,12 @@
     "@backstage/config" "^0.1.2"
     cross-fetch "^3.0.6"
 
-"@backstage/catalog-model@^0.7.0":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-0.7.2.tgz#b0fba7075bc521575c26ac8ff53b8e288a35fde4"
-  integrity sha512-o4FKH/nY186BAPNxnYAlunfIB8+OWT7JcVkwQ6Je49bak/xqoEkDTkCzK20cgxJChl+OsxI/Xg+/f/DhFnkMJw==
+"@backstage/catalog-model@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-0.7.1.tgz#56089c9e027322241f621398e71c33153f2a83c8"
+  integrity sha512-S3hU1RuUqBVy+Xhrr+XIybBLYaXGJTEbOG25GjePCpEujclZlMl8ZWzzsVFluZ8+ydeYERPXweuDi2l7feOHBw==
   dependencies:
-    "@backstage/config" "^0.1.3"
+    "@backstage/config" "^0.1.2"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
     ajv "^7.0.3"
@@ -921,12 +921,12 @@
     uuid "^8.0.0"
     yup "^0.29.3"
 
-"@backstage/catalog-model@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-0.7.1.tgz#56089c9e027322241f621398e71c33153f2a83c8"
-  integrity sha512-S3hU1RuUqBVy+Xhrr+XIybBLYaXGJTEbOG25GjePCpEujclZlMl8ZWzzsVFluZ8+ydeYERPXweuDi2l7feOHBw==
+"@backstage/catalog-model@^0.7.3":
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-0.7.4.tgz#e3cd532ef9e3f27725816985baf2937c7e1a4bcd"
+  integrity sha512-KnQidJLJIBWRqYAkbFASLI5JxXi3FLMUWvxtUnN9HbAEzLFYbBqsKz+AIN38vTJoVryaWTKtMI10/vCMLRP7uA==
   dependencies:
-    "@backstage/config" "^0.1.2"
+    "@backstage/config" "^0.1.3"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
     ajv "^7.0.3"
