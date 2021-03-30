@@ -111,11 +111,7 @@ describe('JiraCard', () => {
       </MemoryRouter>,
     );
 
-    await waitFor(() => {
-      // eslint-disable-next-line
-      rendered
-        .findByText(/status 403: Forbidden/)
-        .then(text => expect(text).toBeInTheDocument());
-    });
+    const text = await rendered.findByText(/status 403: Forbidden/)
+      expect(text).toBeInTheDocument();
   });
 });
