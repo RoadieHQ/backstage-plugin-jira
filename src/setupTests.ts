@@ -16,5 +16,5 @@
 import '@testing-library/jest-dom';
 import 'cross-fetch/polyfill';
 
-
-window.HTMLCanvasElement.prototype.getContext = null
+// @ts-ignore
+window.HTMLCanvasElement.prototype.getContext = () => {}
