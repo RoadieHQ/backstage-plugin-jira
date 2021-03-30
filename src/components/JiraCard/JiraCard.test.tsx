@@ -15,15 +15,15 @@
  */
 
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import { ApiRegistry, ApiProvider, UrlPatternDiscovery } from '@backstage/core';
-import { rest } from 'msw';
-import { msw } from '@backstage/test-utils';
-import { setupServer } from 'msw/node';
+import {render} from '@testing-library/react';
+import {ApiProvider, ApiRegistry, UrlPatternDiscovery} from '@backstage/core';
+import {rest} from 'msw';
+import {msw} from '@backstage/test-utils';
+import {setupServer} from 'msw/node';
 // eslint-disable-next-line
-import { MemoryRouter } from 'react-router-dom';
-import { JiraAPI, jiraApiRef } from '../../api';
-import { JiraCard } from './JiraCard';
+import {MemoryRouter} from 'react-router-dom';
+import {JiraAPI, jiraApiRef} from '../../api';
+import {JiraCard} from './JiraCard';
 import {
   activityResponseStub,
   entityStub,
