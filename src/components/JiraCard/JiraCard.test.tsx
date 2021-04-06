@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import { ApiRegistry, ApiProvider, UrlPatternDiscovery } from '@backstage/core';
+import { render } from '@testing-library/react';
+import { ApiProvider, ApiRegistry, UrlPatternDiscovery } from '@backstage/core';
 import { rest } from 'msw';
 import { msw } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
@@ -111,11 +111,7 @@ describe('JiraCard', () => {
       </MemoryRouter>,
     );
 
-    await waitFor(() => {
-      // eslint-disable-next-line
-      rendered
-        .findByText(/status 403: Forbidden/)
-        .then(text => expect(text).toBeInTheDocument());
-    });
+    const text = await rendered.findByText(/status 403: Forbidden/)
+      expect(text).toBeInTheDocument();
   });
 });
