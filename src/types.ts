@@ -22,7 +22,8 @@ type PropertyValue = {
 };
 
 export type EntityProps = {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
 };
 
 export type SelectorsProps = {

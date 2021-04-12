@@ -17,6 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { ApiProvider, ApiRegistry, UrlPatternDiscovery } from '@backstage/core';
+import { EntityProvider } from "@backstage/plugin-catalog-react";
 import { rest } from 'msw';
 import { msw } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
@@ -66,7 +67,9 @@ describe('JiraCard', () => {
     const rendered = render(
       <MemoryRouter>
         <ApiProvider apis={apis}>
-          <JiraCard entity={entityStub} />
+          <EntityProvider entity={entityStub}>
+            <JiraCard />
+          </EntityProvider>
         </ApiProvider>
       </MemoryRouter>,
     );
@@ -106,7 +109,9 @@ describe('JiraCard', () => {
     const rendered = render(
       <MemoryRouter>
         <ApiProvider apis={apis}>
-          <JiraCard entity={entityStub} />
+          <EntityProvider entity={entityStub}>
+            <JiraCard />
+          </EntityProvider>
         </ApiProvider>
       </MemoryRouter>,
     );
