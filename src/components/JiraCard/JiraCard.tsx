@@ -30,6 +30,7 @@ import {
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard, Progress } from '@backstage/core';
+import { useEntity } from "@backstage/plugin-catalog-react";
 import { useProjectInfo, useProjectEntity } from '../../hooks';
 import { EntityProps, ProjectDetailsProps } from '../../types';
 import { Status } from './components/Status';
@@ -76,7 +77,8 @@ const CardProjectDetails = ({
   </Box>
 );
 
-export const JiraCard = ({ entity }: EntityProps) => {
+export const JiraCard = (_props: EntityProps) => {
+  const { entity } = useEntity();
   const classes = useStyles();
   const { projectKey, component } = useProjectEntity(entity);
   const [statusesNames, setStatusesNames] = useState<Array<string>>([]);
