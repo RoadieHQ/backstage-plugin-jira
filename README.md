@@ -50,26 +50,25 @@ backend:
 
 ```ts
 // packages/app/src/plugins.ts
-export { plugin as Jira } from '@roadiehq/backstage-plugin-jira';
+export { jiraPlugin } from '@roadiehq/backstage-plugin-jira';
 ```
 
 5. Add plugin component to your Backstage instance:
 
 ```ts
 // packages/app/src/components/catalog/EntityPage.tsx
-import {
-  JiraCard,
-  isPluginApplicableToEntity as isJiraAvailable,
-} from '@roadiehq/backstage-plugin-jira';
+import { EntityJiraOverviewCard, isJiraAvailable } from '@roadiehq/backstage-plugin-jira';
 
-const OverviewContent = ({ entity }: { entity: Entity }) => (
+const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
     ...
-    {isJiraAvailable(entity) && (
-      <Grid item md={6}>
-        <JiraCard entity={entity} />
-      </Grid>
-    )}
+    <EntitySwitch>
+      <EntitySwitch.Case if={isJiraAvailable}>
+        <Grid item md={6}>
+          <EntityJiraOverviewCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
   </Grid>
 );
 ```
