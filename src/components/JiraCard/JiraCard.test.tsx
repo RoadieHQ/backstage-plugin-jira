@@ -75,7 +75,7 @@ describe('JiraCard', () => {
     );
 
     expect(await rendered.findByText(/backstage-test/)).toBeInTheDocument();
-    expect(await rendered.findByText(/testComponent/)).toBeInTheDocument();
+    expect((await rendered.findAllByText(/testComponent/)).length).toBeGreaterThan(0);
     expect(
       await rendered.findByText(
         /changed the status to Selected for Development/,
