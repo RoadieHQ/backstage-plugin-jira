@@ -54,10 +54,6 @@ const useStyles = makeStyles((theme: Theme) =>
         marginTop: theme.spacing(1),
       },
     },
-    actions: {
-      // It's a workaroung for strange styles set in @backstage/core InfoCard component
-      margin: theme.spacing(-8, -8, 0, 0),
-    },
   }),
 );
 
@@ -68,7 +64,7 @@ const CardProjectDetails = ({
   project: ProjectDetailsProps;
   component: string;
 }) => (
-  <Box display="flex" alignItems="center">
+  <Box display="inline-flex" alignItems="center">
     <Avatar alt="" src={project.iconUrl} />
     <Box ml={1}>
       {project.name} | {project.type}
@@ -111,33 +107,32 @@ export const JiraCard = (_props: EntityProps) => {
       title="Jira"
       subheader={
         project && (
-          <CardProjectDetails project={project} component={component} />
+          <Box>
+            <CardProjectDetails project={project} component={component} />
+            <Box display="inline-flex" pl={1}>
+              <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={changeType}>
+                  <Checkbox checked={type === 'all'} />
+                  <>Show empty issue types</>
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Box>
         )
-      }
-      actionsTopRight={
-        <>
-          <IconButton
-            className={classes.actions}
-            aria-label="more"
-            aria-controls="long-menu"
-            aria-haspopup="true"
-            onClick={handleClick}
-          >
-            <MoreVertIcon />
-          </IconButton>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={changeType}>
-              <Checkbox checked={type === 'all'} />
-              <>Show empty issue types</>
-            </MenuItem>
-          </Menu>
-        </>
       }
       deepLink={{
         link: `${project?.url}/browse/${projectKey}`,
