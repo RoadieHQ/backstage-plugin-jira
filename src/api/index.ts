@@ -139,8 +139,10 @@ export class JiraAPI {
       iconUrl: status.iconUrl,
     }));
 
+    const filteredIssues = issuesTypes.filter(el => el.name !== "Sub-task");
+
     const issuesCounter = await Promise.all(
-      issuesTypes.map(issue => {
+      filteredIssues.map(issue => {
         const issueType = issue.name;
         const issueIcon = issue.iconUrl;
         return this.getIssuesCountByType({

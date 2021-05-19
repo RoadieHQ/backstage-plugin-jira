@@ -73,9 +73,8 @@ const useStyles = makeStyles((theme: Theme) =>
         borderRadius: '5px',
       },
       '&::-webkit-scrollbar-thumb': {
-        border: `1px solid ${
-          theme.palette.type === 'dark' ? '#555' : '#F5F5F5'
-        }`,
+        border: `1px solid ${theme.palette.type === 'dark' ? '#555' : '#F5F5F5'
+          }`,
         backgroundColor: theme.palette.type === 'dark' ? '#F5F5F5' : '#555',
         borderRadius: '4px',
       },
@@ -133,19 +132,19 @@ export const ActivityStream = ({ projectKey }: { projectKey: string }) => {
   }, [size, activities]);
 
   if (activitiesError) return null; // Hide activity stream on error
-
+  const filteredIssues = activities?.filter(entry => !entry?.icon?.title.includes("Sub-task"))
   return (
     <>
       <Typography variant="subtitle1">Activity stream</Typography>
       <Paper className={classes.paper}>
         {activitiesLoading ? <Progress /> : null}
-        {activities ? (
+        {filteredIssues ? (
           <>
-            {activities.map(entry => (
+            {filteredIssues.map(entry => (
               <Box key={entry.id}>
                 {parse(entry.title, options)}
                 <Box>
-                {parse(
+                  {parse(
                     sanitizeHtml(entry.summary || entry.content || '', {
                       disallowedTagsMode: 'escape',
                     }),
