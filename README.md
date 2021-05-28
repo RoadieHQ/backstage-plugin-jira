@@ -46,14 +46,7 @@ backend:
       - 'JIRA_URL'
 ```
 
-4. Add plugin to the list of plugins:
-
-```ts
-// packages/app/src/plugins.ts
-export { jiraPlugin } from '@roadiehq/backstage-plugin-jira';
-```
-
-5. Add plugin component to your Backstage instance:
+4. Add plugin component to your Backstage instance:
 
 ```ts
 // packages/app/src/components/catalog/EntityPage.tsx
