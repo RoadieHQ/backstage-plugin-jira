@@ -25,7 +25,6 @@ import {
   createStyles,
   Theme,
 } from '@material-ui/core';
-import { Progress } from '@backstage/core';
 import parse, {
   domToReact,
   attributesToProps,
@@ -33,6 +32,7 @@ import parse, {
 } from 'html-react-parser';
 import sanitizeHtml from 'sanitize-html';
 import { useActivityStream } from '../../../hooks';
+import { Progress } from '@backstage/core-components';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

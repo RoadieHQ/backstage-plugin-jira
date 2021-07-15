@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { IssuesCounter, IssueType, Project, Status } from '../types';
 import fetch from 'cross-fetch';
+import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
 export const jiraApiRef = createApiRef<JiraAPI>({
   id: 'plugin.jira.service',

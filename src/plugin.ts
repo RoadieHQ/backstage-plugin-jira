@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { jiraApiRef, JiraAPI } from './api';
 import {
   configApiRef,
   createPlugin,
   createApiFactory,
   discoveryApiRef,
   createComponentExtension,
-} from '@backstage/core';
-import { jiraApiRef, JiraAPI } from './api';
+} from '@backstage/core-plugin-api';
 
 export const jiraPlugin = createPlugin({
   id: 'jira',

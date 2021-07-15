@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { useCallback } from 'react';
-import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { handleError } from './utils';
 import { jiraApiRef } from '../api';
+import { useApi } from '@backstage/core-plugin-api';
 
 export const useStatuses = (projectKey: string) => {
   const api = useApi(jiraApiRef);

@@ -29,7 +29,6 @@ import {
   Divider,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import { InfoCard, Progress } from '@backstage/core';
 import { useEntity } from "@backstage/plugin-catalog-react";
 import { useProjectInfo, useProjectEntity } from '../../hooks';
 import { EntityProps, ProjectDetailsProps } from '../../types';
@@ -38,6 +37,7 @@ import { ActivityStream } from './components/ActivityStream';
 import { Selectors } from './components/Selectors';
 import { useEmptyIssueTypeFilter } from '../../hooks/useEmptyIssueTypeFilter';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { InfoCard, Progress } from '@backstage/core-components';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
