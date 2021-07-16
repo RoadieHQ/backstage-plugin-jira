@@ -25,7 +25,7 @@ import {
   createStyles,
   Theme,
 } from '@material-ui/core';
-import { Progress } from '@backstage/core';
+import { Progress } from '@backstage/core-components';
 import parse, {
   domToReact,
   attributesToProps,

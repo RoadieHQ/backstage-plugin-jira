@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ApiProvider, ApiRegistry, UrlPatternDiscovery } from '@backstage/core';
+import { ApiProvider, ApiRegistry, UrlPatternDiscovery } from '@backstage/core-app-api';
 import { EntityProvider } from "@backstage/plugin-catalog-react";
 import { rest } from 'msw';
 import { msw } from '@backstage/test-utils';

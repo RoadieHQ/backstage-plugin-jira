@@ -19,7 +19,7 @@ import {
   createApiFactory,
   discoveryApiRef,
   createComponentExtension,
-} from '@backstage/core';
+} from '@backstage/core-plugin-api';
 import { jiraApiRef, JiraAPI } from './api';
 
 export const jiraPlugin = createPlugin({
