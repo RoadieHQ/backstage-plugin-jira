@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi } from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 import { IssuesCounter, IssueType, Project, Status } from '../types';
 import fetch from 'cross-fetch';
 

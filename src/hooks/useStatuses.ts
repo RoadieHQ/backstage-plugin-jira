@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCallback } from 'react';
-import { useApi } from '@backstage/core';
+import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
 import { handleError } from './utils';
 import { jiraApiRef } from '../api';

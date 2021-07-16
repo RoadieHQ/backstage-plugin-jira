@@ -17,7 +17,7 @@ import { useEffect, useCallback } from 'react';
 import convert from 'xml-js';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { useApi } from '@backstage/core';
+import { useApi } from '@backstage/core-plugin-api';
 import { useAsyncFn } from 'react-use';
 import { handleError } from './utils';
 import {
